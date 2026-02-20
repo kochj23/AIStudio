@@ -13,6 +13,38 @@ class MLXVoiceClone:
     def __init__(self):
         pass
 
+    def _resample_to_24k(self, input_path):
+        """Resample audio to 24kHz WAV (required by f5-tts-mlx). Returns temp file path."""
+        import subprocess
+        import tempfile
+
+        tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+        tmp_path = tmp.name
+        tmp.close()
+
+        # Use ffmpeg if available, otherwise fall back to afconvert (macOS built-in)
+        try:
+            subprocess.run(
+                ["ffmpeg", "-y", "-i", input_path, "-ar", "24000", "-ac", "1", "-sample_fmt", "s16", tmp_path],
+                capture_output=True, check=True, timeout=30,
+            )
+            return tmp_path
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            pass
+
+        # macOS afconvert fallback
+        try:
+            subprocess.run(
+                ["afconvert", "-f", "WAVE", "-d", "LEI16@24000", "-c", "1", input_path, tmp_path],
+                capture_output=True, check=True, timeout=30,
+            )
+            return tmp_path
+        except (FileNotFoundError, subprocess.CalledProcessError) as e:
+            import os
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+            raise RuntimeError(f"Cannot resample audio to 24kHz. Install ffmpeg or use a 24kHz WAV file. Error: {e}")
+
     def clone(self, text, reference_audio, speed=1.0):
         """Clone a voice from reference audio and generate speech."""
         try:
@@ -28,6 +60,16 @@ class MLXVoiceClone:
 
         start = time.time()
 
+        # Resample reference audio to 24kHz (f5-tts-mlx requirement)
+        resampled_ref = None
+        ref_path = reference_audio
+        try:
+            resampled_ref = self._resample_to_24k(reference_audio)
+            ref_path = resampled_ref
+        except Exception:
+            # If resampling fails, try with original file — f5-tts will error if it can't handle it
+            pass
+
         # Generate to a temp file
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
             tmp_path = tmp.name
@@ -35,7 +77,7 @@ class MLXVoiceClone:
         try:
             f5_generate(
                 generation_text=text,
-                ref_audio_path=reference_audio,
+                ref_audio_path=ref_path,
                 speed=speed,
                 output_path=tmp_path,
             )
@@ -45,6 +87,8 @@ class MLXVoiceClone:
         finally:
             if os.path.exists(tmp_path):
                 os.unlink(tmp_path)
+            if resampled_ref and os.path.exists(resampled_ref):
+                os.unlink(resampled_ref)
 
         elapsed = time.time() - start
         b64 = base64.b64encode(wav_bytes).decode("utf-8")
