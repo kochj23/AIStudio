@@ -54,6 +54,8 @@ struct ImageGenerationView: View {
                         seed: $viewModel.seed,
                         samplerName: $viewModel.samplerName,
                         batchSize: $viewModel.batchSize,
+                        selectedCheckpoint: $viewModel.selectedCheckpoint,
+                        availableModels: viewModel.availableModels,
                         availableSamplers: viewModel.availableSamplers,
                         onSwapDimensions: viewModel.swapDimensions,
                         onRandomizeSeed: viewModel.randomizeSeed

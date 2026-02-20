@@ -32,7 +32,7 @@ actor SwarmUIService: ImageBackendProtocol {
     // MARK: - Health Check
 
     func checkHealth() async -> BackendStatus {
-        guard let url = URL(string: "\(baseURL)/API/GetCurrentStatus") else {
+        guard let url = URL(string: "\(baseURL)/API/GetNewSession") else {
             return .error("Invalid URL")
         }
         do {
@@ -41,8 +41,13 @@ actor SwarmUIService: ImageBackendProtocol {
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.httpBody = "{}".data(using: .utf8)
-            let (_, response) = try await session.data(for: request)
+            let (data, response) = try await session.data(for: request)
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                // Cache session while we're at it
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let sid = json["session_id"] as? String {
+                    self.sessionId = sid
+                }
                 return .connected
             }
             return .error("Unexpected response")
@@ -71,15 +76,20 @@ actor SwarmUIService: ImageBackendProtocol {
     func listModels() async throws -> [A1111Model] {
         try await ensureSession()
 
-        let body: [String: Any] = ["session_id": sessionId ?? ""]
+        let body: [String: Any] = [
+            "session_id": sessionId ?? "",
+            "path": "",
+            "depth": 10
+        ]
         let data = try JSONSerialization.data(withJSONObject: body)
         let response = try await post("/API/ListModels", body: data)
 
         if let json = try? JSONSerialization.jsonObject(with: response) as? [String: Any],
-           let models = json["models"] as? [[String: Any]] {
-            return models.compactMap { dict in
+           let files = json["files"] as? [[String: Any]] {
+            return files.compactMap { dict in
                 guard let name = dict["name"] as? String else { return nil }
-                return A1111Model(title: name, modelName: name, hash: nil, filename: nil)
+                let title = dict["title"] as? String ?? name
+                return A1111Model(title: title, modelName: name, hash: nil, filename: name)
             }
         }
         return []
@@ -102,7 +112,7 @@ actor SwarmUIService: ImageBackendProtocol {
         let startTime = Date()
         try await ensureSession()
 
-        let body: [String: Any] = [
+        var body: [String: Any] = [
             "session_id": sessionId ?? "",
             "prompt": request.prompt,
             "negativeprompt": request.negativePrompt,
@@ -114,6 +124,9 @@ actor SwarmUIService: ImageBackendProtocol {
             "images": request.batchSize,
             "sampler": request.samplerName,
         ]
+        if let checkpoint = request.checkpointName, !checkpoint.isEmpty {
+            body["model"] = checkpoint
+        }
 
         let bodyData = try JSONSerialization.data(withJSONObject: body)
         let responseData = try await post("/API/GenerateText2Image", body: bodyData)

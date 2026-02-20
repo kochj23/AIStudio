@@ -19,6 +19,7 @@ struct ImageGenerationRequest: Codable, Sendable {
     var height: Int = 512
     var seed: Int = -1
     var batchSize: Int = 1
+    var checkpointName: String?
 
     enum CodingKeys: String, CodingKey {
         case prompt
@@ -30,6 +31,7 @@ struct ImageGenerationRequest: Codable, Sendable {
         case height
         case seed
         case batchSize = "batch_size"
+        case checkpointName = "checkpoint_name"
     }
 }
 

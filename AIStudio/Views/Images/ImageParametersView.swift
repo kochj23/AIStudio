@@ -16,6 +16,8 @@ struct ImageParametersView: View {
     @Binding var seed: Int
     @Binding var samplerName: String
     @Binding var batchSize: Int
+    @Binding var selectedCheckpoint: String
+    let availableModels: [A1111Model]
     let availableSamplers: [A1111Sampler]
     let onSwapDimensions: () -> Void
     let onRandomizeSeed: () -> Void
@@ -24,6 +26,20 @@ struct ImageParametersView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Parameters")
                 .font(.headline)
+
+            // Model/Checkpoint
+            if !availableModels.isEmpty {
+                HStack {
+                    Text("Model")
+                        .frame(width: 80, alignment: .leading)
+                    Picker("", selection: $selectedCheckpoint) {
+                        ForEach(availableModels) { model in
+                            Text(model.title).tag(model.modelName)
+                        }
+                    }
+                    .labelsHidden()
+                }
+            }
 
             // Sampler
             if !availableSamplers.isEmpty {

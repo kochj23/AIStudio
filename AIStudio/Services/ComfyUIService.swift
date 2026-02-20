@@ -173,6 +173,7 @@ actor ComfyUIService: ImageBackendProtocol {
     // MARK: - Workflow Building
 
     private func buildTxt2ImgWorkflow(_ request: ImageGenerationRequest) -> [String: Any] {
+        let checkpoint = request.checkpointName ?? "sd_xl_base_1.0.safetensors"
         return [
             "3": [
                 "class_type": "KSampler",
@@ -191,7 +192,7 @@ actor ComfyUIService: ImageBackendProtocol {
             ] as [String : Any],
             "4": [
                 "class_type": "CheckpointLoaderSimple",
-                "inputs": ["ckpt_name": "v1-5-pruned-emaonly.safetensors"]
+                "inputs": ["ckpt_name": checkpoint]
             ],
             "5": [
                 "class_type": "EmptyLatentImage",
@@ -233,6 +234,8 @@ actor ComfyUIService: ImageBackendProtocol {
     }
 
     private func buildImg2ImgWorkflow(_ request: ImageToImageRequest, inputImageName: String) -> [String: Any] {
+        // img2img doesn't carry checkpoint — use same default
+        let checkpoint = "sd_xl_base_1.0.safetensors"
         return [
             "1": [
                 "class_type": "LoadImage",
@@ -262,7 +265,7 @@ actor ComfyUIService: ImageBackendProtocol {
             ] as [String : Any],
             "4": [
                 "class_type": "CheckpointLoaderSimple",
-                "inputs": ["ckpt_name": "v1-5-pruned-emaonly.safetensors"]
+                "inputs": ["ckpt_name": checkpoint]
             ],
             "6": [
                 "class_type": "CLIPTextEncode",
@@ -491,11 +494,12 @@ actor ComfyUIService: ImageBackendProtocol {
         strength: Double,
         preprocessor: String?
     ) -> [String: Any] {
+        let checkpoint = request.checkpointName ?? "sd_xl_base_1.0.safetensors"
         var workflow: [String: Any] = [
             // Checkpoint loader
             "4": [
                 "class_type": "CheckpointLoaderSimple",
-                "inputs": ["ckpt_name": "v1-5-pruned-emaonly.safetensors"]
+                "inputs": ["ckpt_name": checkpoint]
             ],
             // Positive prompt
             "6": [

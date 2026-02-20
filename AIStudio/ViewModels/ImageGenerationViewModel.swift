@@ -44,6 +44,7 @@ class ImageGenerationViewModel: ObservableObject {
 
     @Published var availableModels: [A1111Model] = []
     @Published var availableSamplers: [A1111Sampler] = []
+    @Published var selectedCheckpoint: String = ""
 
     private weak var backendManager: BackendManager?
     private weak var generationQueue: GenerationQueue?
@@ -87,6 +88,10 @@ class ImageGenerationViewModel: ObservableObject {
             let (models, samplers) = try await (modelsResult, samplersResult)
             self.availableModels = models
             self.availableSamplers = samplers
+            // Auto-select first model if none selected
+            if selectedCheckpoint.isEmpty, let first = models.first {
+                selectedCheckpoint = first.modelName
+            }
             logInfo("Loaded \(models.count) models, \(samplers.count) samplers", category: "ImageGen")
         } catch {
             logWarning("Failed to load models/samplers: \(error.localizedDescription)", category: "ImageGen")
@@ -114,7 +119,8 @@ class ImageGenerationViewModel: ObservableObject {
             width: width,
             height: height,
             seed: seed,
-            batchSize: batchSize
+            batchSize: batchSize,
+            checkpointName: selectedCheckpoint.isEmpty ? nil : selectedCheckpoint
         )
 
         isGenerating = true
