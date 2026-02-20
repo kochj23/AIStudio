@@ -5,48 +5,60 @@ Uses f5-tts-mlx for reference-based voice cloning on Apple Silicon.
 
 import base64
 import io
+import time
 import numpy as np
 
 
 class MLXVoiceClone:
     def __init__(self):
-        self._model = None
+        pass
 
-    def _load_model(self):
-        if self._model is not None:
-            return self._model
-
+    def clone(self, text, reference_audio, speed=1.0):
+        """Clone a voice from reference audio and generate speech."""
         try:
-            from f5_tts_mlx import F5TTS
-            self._model = F5TTS()
+            from f5_tts_mlx.generate import generate as f5_generate
         except ImportError:
             raise RuntimeError(
                 "f5-tts-mlx not available. Install it:\n"
                 "  pip install f5-tts-mlx"
             )
 
-        return self._model
+        import tempfile
+        import os
 
-    def clone(self, text, reference_audio, speed=1.0):
-        """Clone a voice from reference audio and generate speech."""
-        model = self._load_model()
+        start = time.time()
 
-        audio_array = model.generate(
-            text=text,
-            ref_audio_path=reference_audio,
-            speed=speed,
-        )
+        # Generate to a temp file
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+            tmp_path = tmp.name
 
-        sample_rate = getattr(model, "sample_rate", 24000)
-        wav_bytes = self._array_to_wav(audio_array, sample_rate)
+        try:
+            f5_generate(
+                generation_text=text,
+                ref_audio_path=reference_audio,
+                speed=speed,
+                output_path=tmp_path,
+            )
+
+            with open(tmp_path, "rb") as f:
+                wav_bytes = f.read()
+        finally:
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+
+        elapsed = time.time() - start
         b64 = base64.b64encode(wav_bytes).decode("utf-8")
 
-        duration = len(audio_array) / sample_rate
+        # Estimate duration from WAV data (header is 44 bytes, 16-bit mono 24kHz)
+        sample_rate = 24000
+        data_size = max(len(wav_bytes) - 44, 0)
+        duration = data_size / (sample_rate * 2)
 
         return {
             "audio": b64,
             "sample_rate": sample_rate,
-            "duration": duration,
+            "duration": round(duration, 2),
+            "generation_time": round(elapsed, 2),
         }
 
     def _array_to_wav(self, audio_array, sample_rate):
