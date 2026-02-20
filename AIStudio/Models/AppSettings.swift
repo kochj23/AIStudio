@@ -27,6 +27,16 @@ class AppSettings: ObservableObject {
         static let defaultSampler = "defaultSampler"
         static let autoSaveImages = "autoSaveImages"
         static let showNegativePrompt = "showNegativePrompt"
+        // LLM Backend Settings
+        static let ollamaURL = "ollamaURL"
+        static let tinyLLMURL = "tinyLLMURL"
+        static let tinyChatURL = "tinyChatURL"
+        static let openWebUIURL = "openWebUIURL"
+        static let activeLLMBackendType = "activeLLMBackendType"
+        static let selectedOllamaModel = "selectedOllamaModel"
+        static let chatTemperature = "chatTemperature"
+        static let chatMaxTokens = "chatMaxTokens"
+        static let defaultSystemPrompt = "defaultSystemPrompt"
     }
 
     // MARK: - Backend URLs
@@ -91,6 +101,44 @@ class AppSettings: ObservableObject {
         didSet { UserDefaults.standard.set(showNegativePrompt, forKey: Keys.showNegativePrompt) }
     }
 
+    // MARK: - LLM Backend URLs
+
+    @Published var ollamaURL: String {
+        didSet { UserDefaults.standard.set(ollamaURL, forKey: Keys.ollamaURL) }
+    }
+
+    @Published var tinyLLMURL: String {
+        didSet { UserDefaults.standard.set(tinyLLMURL, forKey: Keys.tinyLLMURL) }
+    }
+
+    @Published var tinyChatURL: String {
+        didSet { UserDefaults.standard.set(tinyChatURL, forKey: Keys.tinyChatURL) }
+    }
+
+    @Published var openWebUIURL: String {
+        didSet { UserDefaults.standard.set(openWebUIURL, forKey: Keys.openWebUIURL) }
+    }
+
+    @Published var activeLLMBackendType: String {
+        didSet { UserDefaults.standard.set(activeLLMBackendType, forKey: Keys.activeLLMBackendType) }
+    }
+
+    @Published var selectedOllamaModel: String {
+        didSet { UserDefaults.standard.set(selectedOllamaModel, forKey: Keys.selectedOllamaModel) }
+    }
+
+    @Published var chatTemperature: Float {
+        didSet { UserDefaults.standard.set(chatTemperature, forKey: Keys.chatTemperature) }
+    }
+
+    @Published var chatMaxTokens: Int {
+        didSet { UserDefaults.standard.set(chatMaxTokens, forKey: Keys.chatMaxTokens) }
+    }
+
+    @Published var defaultSystemPrompt: String {
+        didSet { UserDefaults.standard.set(defaultSystemPrompt, forKey: Keys.defaultSystemPrompt) }
+    }
+
     // MARK: - Initialization
 
     private init() {
@@ -115,6 +163,17 @@ class AppSettings: ObservableObject {
         self.autoSaveImages = defaults.object(forKey: Keys.autoSaveImages) as? Bool ?? true
         self.showNegativePrompt = defaults.object(forKey: Keys.showNegativePrompt) as? Bool ?? true
 
+        // LLM Backend Settings
+        self.ollamaURL = defaults.string(forKey: Keys.ollamaURL) ?? "http://localhost:11434"
+        self.tinyLLMURL = defaults.string(forKey: Keys.tinyLLMURL) ?? "http://localhost:8000"
+        self.tinyChatURL = defaults.string(forKey: Keys.tinyChatURL) ?? "http://localhost:8000"
+        self.openWebUIURL = defaults.string(forKey: Keys.openWebUIURL) ?? "http://localhost:8080"
+        self.activeLLMBackendType = defaults.string(forKey: Keys.activeLLMBackendType) ?? "auto"
+        self.selectedOllamaModel = defaults.string(forKey: Keys.selectedOllamaModel) ?? "mistral:latest"
+        self.chatTemperature = defaults.object(forKey: Keys.chatTemperature) as? Float ?? 0.7
+        self.chatMaxTokens = defaults.object(forKey: Keys.chatMaxTokens) as? Int ?? 2048
+        self.defaultSystemPrompt = defaults.string(forKey: Keys.defaultSystemPrompt) ?? "You are a helpful creative assistant specializing in art, image generation, and creative writing. Help users craft better prompts, describe images, and explore creative ideas."
+
         // Ensure output directory exists
         try? FileManager.default.createDirectory(
             atPath: outputDirectory,
@@ -136,5 +195,15 @@ class AppSettings: ObservableObject {
         defaultSampler = "Euler a"
         autoSaveImages = true
         showNegativePrompt = true
+        // LLM defaults
+        ollamaURL = "http://localhost:11434"
+        tinyLLMURL = "http://localhost:8000"
+        tinyChatURL = "http://localhost:8000"
+        openWebUIURL = "http://localhost:8080"
+        activeLLMBackendType = "auto"
+        selectedOllamaModel = "mistral:latest"
+        chatTemperature = 0.7
+        chatMaxTokens = 2048
+        defaultSystemPrompt = "You are a helpful creative assistant specializing in art, image generation, and creative writing. Help users craft better prompts, describe images, and explore creative ideas."
     }
 }

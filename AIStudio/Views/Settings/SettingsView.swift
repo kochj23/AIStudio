@@ -33,8 +33,13 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Defaults", systemImage: "slider.horizontal.3")
                 }
+
+            LLMSettingsView()
+                .tabItem {
+                    Label("LLM", systemImage: "brain.head.profile")
+                }
         }
-        .frame(width: 520, height: 400)
+        .frame(width: 580, height: 500)
     }
 
     // MARK: - Output Settings

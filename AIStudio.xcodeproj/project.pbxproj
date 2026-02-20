@@ -54,6 +54,15 @@
 		A100000000000000000032B1 /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000032 /* GalleryView.swift */; };
 		A100000000000000000033B1 /* GalleryGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000033 /* GalleryGridView.swift */; };
 		A100000000000000000034B1 /* MediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000034 /* MediaDetailView.swift */; };
+		/* LLM Chat files */
+		A100000000000000000040B1 /* LLMBackendType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* LLMBackendType.swift */; };
+		A100000000000000000041B1 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000041 /* ChatMessage.swift */; };
+		A100000000000000000042B1 /* LLMBackendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000042 /* LLMBackendManager.swift */; };
+		A100000000000000000043B1 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000043 /* ChatViewModel.swift */; };
+		A100000000000000000044B1 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000044 /* ChatView.swift */; };
+		A100000000000000000045B1 /* ChatMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000045 /* ChatMessageView.swift */; };
+		A100000000000000000046B1 /* LLMBackendStatusMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000046 /* LLMBackendStatusMenu.swift */; };
+		A100000000000000000047B1 /* LLMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000047 /* LLMSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -106,6 +115,15 @@
 		A10000000000000000000032 /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
 		A10000000000000000000033 /* GalleryGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryGridView.swift; sourceTree = "<group>"; };
 		A10000000000000000000034 /* MediaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailView.swift; sourceTree = "<group>"; };
+		/* LLM Chat files */
+		A10000000000000000000040 /* LLMBackendType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBackendType.swift; sourceTree = "<group>"; };
+		A10000000000000000000041 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		A10000000000000000000042 /* LLMBackendManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBackendManager.swift; sourceTree = "<group>"; };
+		A10000000000000000000043 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		A10000000000000000000044 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		A10000000000000000000045 /* ChatMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageView.swift; sourceTree = "<group>"; };
+		A10000000000000000000046 /* LLMBackendStatusMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBackendStatusMenu.swift; sourceTree = "<group>"; };
+		A10000000000000000000047 /* LLMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +169,8 @@
 				A10000000000000000000005 /* GenerationResult.swift */,
 				A10000000000000000000006 /* BackendConfiguration.swift */,
 				A10000000000000000000007 /* MediaItem.swift */,
+				A10000000000000000000040 /* LLMBackendType.swift */,
+				A10000000000000000000041 /* ChatMessage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -168,6 +188,7 @@
 				A1000000000000000000000A /* BackendManager.swift */,
 				A10000000000000000000025 /* GalleryService.swift */,
 				A10000000000000000000026 /* MediaExportService.swift */,
+				A10000000000000000000042 /* LLMBackendManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -179,6 +200,7 @@
 				A10000000000000000000027 /* VideoGenerationViewModel.swift */,
 				A10000000000000000000028 /* AudioViewModel.swift */,
 				A10000000000000000000029 /* GalleryViewModel.swift */,
+				A10000000000000000000043 /* ChatViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -189,6 +211,7 @@
 				C10000000000000000000007 /* Images */,
 				C1000000000000000000000A /* Videos */,
 				C1000000000000000000000B /* Audio */,
+				C10000000000000000000010 /* Chat */,
 				C1000000000000000000000C /* Gallery */,
 				C10000000000000000000008 /* Common */,
 				C10000000000000000000009 /* Settings */,
@@ -222,6 +245,7 @@
 			children = (
 				A10000000000000000000013 /* SettingsView.swift */,
 				A10000000000000000000014 /* BackendSettingsView.swift */,
+				A10000000000000000000047 /* LLMSettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -267,6 +291,16 @@
 				A10000000000000000000018 /* FileOrganizer.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000010 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000044 /* ChatView.swift */,
+				A10000000000000000000045 /* ChatMessageView.swift */,
+				A10000000000000000000046 /* LLMBackendStatusMenu.swift */,
+			);
+			path = Chat;
 			sourceTree = "<group>";
 		};
 		C1000000000000000000000E /* Products */ = {
@@ -391,6 +425,14 @@
 				A100000000000000000032B1 /* GalleryView.swift in Sources */,
 				A100000000000000000033B1 /* GalleryGridView.swift in Sources */,
 				A100000000000000000034B1 /* MediaDetailView.swift in Sources */,
+				A100000000000000000040B1 /* LLMBackendType.swift in Sources */,
+				A100000000000000000041B1 /* ChatMessage.swift in Sources */,
+				A100000000000000000042B1 /* LLMBackendManager.swift in Sources */,
+				A100000000000000000043B1 /* ChatViewModel.swift in Sources */,
+				A100000000000000000044B1 /* ChatView.swift in Sources */,
+				A100000000000000000045B1 /* ChatMessageView.swift in Sources */,
+				A100000000000000000046B1 /* LLMBackendStatusMenu.swift in Sources */,
+				A100000000000000000047B1 /* LLMSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,7 +449,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -418,7 +460,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -436,7 +478,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -447,7 +489,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

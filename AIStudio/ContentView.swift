@@ -16,6 +16,7 @@ struct ContentView: View {
         case images = "Images"
         case videos = "Videos"
         case audio = "Audio"
+        case chat = "Chat"
         case gallery = "Gallery"
 
         var icon: String {
@@ -23,6 +24,7 @@ struct ContentView: View {
             case .images: return "photo.artframe"
             case .videos: return "film"
             case .audio: return "waveform"
+            case .chat: return "brain.head.profile"
             case .gallery: return "square.grid.3x3"
             }
         }
@@ -47,6 +49,12 @@ struct ContentView: View {
                     Label(StudioTab.audio.rawValue, systemImage: StudioTab.audio.icon)
                 }
                 .tag(StudioTab.audio)
+
+            ChatView()
+                .tabItem {
+                    Label(StudioTab.chat.rawValue, systemImage: StudioTab.chat.icon)
+                }
+                .tag(StudioTab.chat)
 
             GalleryView()
                 .tabItem {
