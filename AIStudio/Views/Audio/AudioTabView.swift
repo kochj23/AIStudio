@@ -10,6 +10,7 @@ import SwiftUI
 
 /// Container view for all audio sub-features: TTS, Voice Clone, Music, STT.
 struct AudioTabView: View {
+    @EnvironmentObject var backendManager: BackendManager
     @StateObject private var viewModel = AudioViewModel()
     @State private var selectedSubTab: AudioSubTab = .tts
 
@@ -65,6 +66,10 @@ struct AudioTabView: View {
                     .padding(.horizontal)
                     .padding(.vertical, 8)
             }
+        }
+        .onAppear {
+            viewModel.configure(daemon: backendManager.pythonDaemon)
+            viewModel.loadVoices()
         }
     }
 }
