@@ -63,7 +63,38 @@
 		A100000000000000000045B1 /* ChatMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000045 /* ChatMessageView.swift */; };
 		A100000000000000000046B1 /* LLMBackendStatusMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000046 /* LLMBackendStatusMenu.swift */; };
 		A100000000000000000047B1 /* LLMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000047 /* LLMSettingsView.swift */; };
+		/* Widget files */
+		A100000000000000000050B1 /* WidgetDataSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000050 /* WidgetDataSync.swift */; };
+		W1DGET1AIST_APPEXEMB123 /* AIStudio Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		W1DGET1AIST_BLDMAIN1234 /* AIStudioWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCMAIN1234 /* AIStudioWidget.swift */; };
+		W1DGET1AIST_BLDDATA1234 /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */; };
+		W1DGET1AIST_BLDSHRD1234 /* SharedDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCSHRD1234 /* SharedDataManager.swift */; };
+		W1DGET1AIST_BLDASST1234 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001A /* Assets.xcassets */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		W1DGET1AIST_PROXY123456 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E10000000000000000000007 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = W1DGET1AIST_TARGET12345;
+			remoteInfo = "AIStudio Widget";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		W1DGET1AIST_EMBED123456 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				W1DGET1AIST_APPEXEMB123 /* AIStudio Widget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A10000000000000000000001 /* AIStudioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStudioApp.swift; sourceTree = "<group>"; };
@@ -124,10 +155,24 @@
 		A10000000000000000000045 /* ChatMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageView.swift; sourceTree = "<group>"; };
 		A10000000000000000000046 /* LLMBackendStatusMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBackendStatusMenu.swift; sourceTree = "<group>"; };
 		A10000000000000000000047 /* LLMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsView.swift; sourceTree = "<group>"; };
+		/* Widget files */
+		A10000000000000000000050 /* WidgetDataSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataSync.swift; sourceTree = "<group>"; };
+		W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "AIStudio Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		W1DGET1AIST_SRCMAIN1234 /* AIStudioWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStudioWidget.swift; sourceTree = "<group>"; };
+		W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetData.swift; sourceTree = "<group>"; };
+		W1DGET1AIST_SRCSHRD1234 /* SharedDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDataManager.swift; sourceTree = "<group>"; };
+		W1DGET1AIST_ENTITLE1234 /* AIStudio_Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIStudio_Widget.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		D10000000000000000000003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W1DGET1AIST_FRMPHASE123 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -141,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				C10000000000000000000002 /* AIStudio */,
+				W1DGET1AIST_GROUP123456 /* AIStudio Widget */,
 				C1000000000000000000000E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -189,6 +235,7 @@
 				A10000000000000000000025 /* GalleryService.swift */,
 				A10000000000000000000026 /* MediaExportService.swift */,
 				A10000000000000000000042 /* LLMBackendManager.swift */,
+				A10000000000000000000050 /* WidgetDataSync.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -303,10 +350,22 @@
 			path = Chat;
 			sourceTree = "<group>";
 		};
+		W1DGET1AIST_GROUP123456 /* AIStudio Widget */ = {
+			isa = PBXGroup;
+			children = (
+				W1DGET1AIST_SRCMAIN1234 /* AIStudioWidget.swift */,
+				W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */,
+				W1DGET1AIST_SRCSHRD1234 /* SharedDataManager.swift */,
+				W1DGET1AIST_ENTITLE1234 /* AIStudio_Widget.entitlements */,
+			);
+			path = "AIStudio Widget";
+			sourceTree = "<group>";
+		};
 		C1000000000000000000000E /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				A1000000000000000000001B /* AIStudio.app */,
+				W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -321,15 +380,34 @@
 				D10000000000000000000001 /* Sources */,
 				D10000000000000000000002 /* Resources */,
 				D10000000000000000000003 /* Frameworks */,
+				W1DGET1AIST_EMBED123456 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				W1DGET1AIST_DEPEND12345 /* PBXTargetDependency */,
 			);
 			name = AIStudio;
 			productName = AIStudio;
 			productReference = A1000000000000000000001B /* AIStudio.app */;
 			productType = "com.apple.product-type.application";
+		};
+		W1DGET1AIST_TARGET12345 /* AIStudio Widget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = W1DGET1AIST_CFGLIST1234 /* Build configuration list for PBXNativeTarget "AIStudio Widget" */;
+			buildPhases = (
+				W1DGET1AIST_SRCPHASE123 /* Sources */,
+				W1DGET1AIST_FRMPHASE123 /* Frameworks */,
+				W1DGET1AIST_RESPHASE123 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "AIStudio Widget";
+			productName = "AIStudio Widget";
+			productReference = W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -342,6 +420,9 @@
 				LastUpgradeCheck = 1540;
 				TargetAttributes = {
 					E10000000000000000000008 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+					W1DGET1AIST_TARGET12345 = {
 						CreatedOnToolsVersion = 15.4;
 					};
 				};
@@ -360,6 +441,7 @@
 			projectRoot = "";
 			targets = (
 				E10000000000000000000008 /* AIStudio */,
+				W1DGET1AIST_TARGET12345 /* AIStudio Widget */,
 			);
 		};
 /* End PBXProject section */
@@ -370,6 +452,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000001AB1 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W1DGET1AIST_RESPHASE123 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W1DGET1AIST_BLDASST1234 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -433,15 +523,35 @@
 				A100000000000000000045B1 /* ChatMessageView.swift in Sources */,
 				A100000000000000000046B1 /* LLMBackendStatusMenu.swift in Sources */,
 				A100000000000000000047B1 /* LLMSettingsView.swift in Sources */,
+				A100000000000000000050B1 /* WidgetDataSync.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W1DGET1AIST_SRCPHASE123 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W1DGET1AIST_BLDMAIN1234 /* AIStudioWidget.swift in Sources */,
+				W1DGET1AIST_BLDDATA1234 /* WidgetData.swift in Sources */,
+				W1DGET1AIST_BLDSHRD1234 /* SharedDataManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		W1DGET1AIST_DEPEND12345 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = W1DGET1AIST_TARGET12345 /* AIStudio Widget */;
+			targetProxy = W1DGET1AIST_PROXY123456 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		E10000000000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AIStudio/AIStudio.entitlements;
@@ -449,7 +559,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -460,7 +570,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -471,6 +581,7 @@
 		E10000000000000000000002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AIStudio/AIStudio.entitlements;
@@ -478,7 +589,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -489,7 +600,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -615,6 +726,67 @@
 			};
 			name = Release;
 		};
+		/* Widget build configurations */
+		W1DGET1AIST_DBGCFG12345 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "AIStudio Widget/AIStudio_Widget.entitlements";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "AIStudio Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "AIStudio Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Jordan Koch. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 2.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		W1DGET1AIST_RELCFG12345 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "AIStudio Widget/AIStudio_Widget.entitlements";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "AIStudio Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "AIStudio Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Jordan Koch. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 2.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -632,6 +804,15 @@
 			buildConfigurations = (
 				E10000000000000000000003 /* Debug */,
 				E10000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		W1DGET1AIST_CFGLIST1234 /* Build configuration list for PBXNativeTarget "AIStudio Widget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				W1DGET1AIST_DBGCFG12345 /* Debug */,
+				W1DGET1AIST_RELCFG12345 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
