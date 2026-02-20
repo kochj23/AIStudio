@@ -76,6 +76,14 @@
 		W1DGET1AIST_BLDDATA1234 /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */; };
 		W1DGET1AIST_BLDSHRD1234 /* SharedDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCSHRD1234 /* SharedDataManager.swift */; };
 		W1DGET1AIST_BLDASST1234 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001A /* Assets.xcassets */; };
+		/* Python daemon files in Resources */
+		PY00000000000000000001B1 /* aistudio_daemon.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000001 /* aistudio_daemon.py */; };
+		PY00000000000000000002B1 /* mlx_image_gen.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000002 /* mlx_image_gen.py */; };
+		PY00000000000000000003B1 /* mlx_tts.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000003 /* mlx_tts.py */; };
+		PY00000000000000000004B1 /* mlx_voice_clone.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000004 /* mlx_voice_clone.py */; };
+		PY00000000000000000005B1 /* mlx_whisper_stt.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000005 /* mlx_whisper_stt.py */; };
+		PY00000000000000000006B1 /* mlx_music_gen.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000006 /* mlx_music_gen.py */; };
+		PY00000000000000000007B1 /* requirements.txt in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000007 /* requirements.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -174,6 +182,14 @@
 		W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetData.swift; sourceTree = "<group>"; };
 		W1DGET1AIST_SRCSHRD1234 /* SharedDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDataManager.swift; sourceTree = "<group>"; };
 		W1DGET1AIST_ENTITLE1234 /* AIStudio_Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIStudio_Widget.entitlements; sourceTree = "<group>"; };
+		/* Python daemon files */
+		PY0000000000000000000001 /* aistudio_daemon.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = aistudio_daemon.py; sourceTree = "<group>"; };
+		PY0000000000000000000002 /* mlx_image_gen.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_image_gen.py; sourceTree = "<group>"; };
+		PY0000000000000000000003 /* mlx_tts.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_tts.py; sourceTree = "<group>"; };
+		PY0000000000000000000004 /* mlx_voice_clone.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_voice_clone.py; sourceTree = "<group>"; };
+		PY0000000000000000000005 /* mlx_whisper_stt.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_whisper_stt.py; sourceTree = "<group>"; };
+		PY0000000000000000000006 /* mlx_music_gen.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_music_gen.py; sourceTree = "<group>"; };
+		PY0000000000000000000007 /* requirements.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = requirements.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,6 +229,7 @@
 				C10000000000000000000005 /* ViewModels */,
 				C10000000000000000000006 /* Views */,
 				C1000000000000000000000D /* Utilities */,
+				PYGRP00000000000000001 /* Python */,
 				A10000000000000000000019 /* AIStudio.entitlements */,
 				A1000000000000000000001A /* Assets.xcassets */,
 			);
@@ -388,6 +405,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		PYGRP00000000000000001 /* Python */ = {
+			isa = PBXGroup;
+			children = (
+				PY0000000000000000000001 /* aistudio_daemon.py */,
+				PY0000000000000000000002 /* mlx_image_gen.py */,
+				PY0000000000000000000003 /* mlx_tts.py */,
+				PY0000000000000000000004 /* mlx_voice_clone.py */,
+				PY0000000000000000000005 /* mlx_whisper_stt.py */,
+				PY0000000000000000000006 /* mlx_music_gen.py */,
+				PY0000000000000000000007 /* requirements.txt */,
+			);
+			path = Python;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -470,6 +501,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000001AB1 /* Assets.xcassets in Resources */,
+				PY00000000000000000001B1 /* aistudio_daemon.py in Resources */,
+				PY00000000000000000002B1 /* mlx_image_gen.py in Resources */,
+				PY00000000000000000003B1 /* mlx_tts.py in Resources */,
+				PY00000000000000000004B1 /* mlx_voice_clone.py in Resources */,
+				PY00000000000000000005B1 /* mlx_whisper_stt.py in Resources */,
+				PY00000000000000000006B1 /* mlx_music_gen.py in Resources */,
+				PY00000000000000000007B1 /* requirements.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

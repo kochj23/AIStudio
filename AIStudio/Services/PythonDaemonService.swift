@@ -34,7 +34,7 @@ actor PythonDaemonService {
             self.scriptPath = scriptPath
         } else {
             self.scriptPath = Bundle.main.path(forResource: "aistudio_daemon", ofType: "py")
-                ?? Bundle.main.bundlePath + "/Contents/Resources/Python/aistudio_daemon.py"
+                ?? Bundle.main.bundlePath + "/Contents/Resources/aistudio_daemon.py"
         }
     }
 
@@ -46,7 +46,16 @@ actor PythonDaemonService {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: pythonPath)
         process.arguments = ["-u", scriptPath]
-        process.environment = ProcessInfo.processInfo.environment
+
+        // Set working directory to script's folder so Python finds helper modules
+        let scriptDir = (scriptPath as NSString).deletingLastPathComponent
+        process.currentDirectoryURL = URL(fileURLWithPath: scriptDir)
+
+        var env = ProcessInfo.processInfo.environment
+        // Add script directory to PYTHONPATH so imports resolve
+        let existingPythonPath = env["PYTHONPATH"] ?? ""
+        env["PYTHONPATH"] = existingPythonPath.isEmpty ? scriptDir : "\(scriptDir):\(existingPythonPath)"
+        process.environment = env
 
         let stdinPipe = Pipe()
         let stdoutPipe = Pipe()
