@@ -401,6 +401,195 @@ actor ComfyUIService: ImageBackendProtocol {
         return name
     }
 
+    // MARK: - ControlNet Support
+
+    /// List available ControlNet models from ComfyUI
+    func listControlNetModels() async throws -> [String] {
+        let data = try await get("/object_info/ControlNetLoader")
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let nodeInfo = json["ControlNetLoader"] as? [String: Any],
+           let input = nodeInfo["input"] as? [String: Any],
+           let required = input["required"] as? [String: Any],
+           let controlNetName = required["control_net_name"] as? [[Any]],
+           let names = controlNetName.first as? [String] {
+            return names
+        }
+        return []
+    }
+
+    /// List available ControlNet preprocessors
+    func listPreprocessors() async throws -> [String] {
+        let data = try await get("/object_info/AIO_Preprocessor")
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let nodeInfo = json["AIO_Preprocessor"] as? [String: Any],
+           let input = nodeInfo["input"] as? [String: Any],
+           let required = input["required"] as? [String: Any],
+           let preprocessor = required["preprocessor"] as? [[Any]],
+           let names = preprocessor.first as? [String] {
+            return names
+        }
+        return []
+    }
+
+    /// Generate with ControlNet conditioning
+    func textToImageWithControlNet(
+        _ request: ImageGenerationRequest,
+        controlImage: Data,
+        controlNetModel: String,
+        strength: Double = 1.0,
+        preprocessor: String? = nil
+    ) async throws -> ImageGenerationResult {
+        let startTime = Date()
+
+        // Upload control image
+        let controlImageName = try await uploadImage(controlImage, filename: "controlnet_\(UUID().uuidString).png")
+
+        let workflow = buildControlNetWorkflow(
+            request,
+            controlImageName: controlImageName,
+            controlNetModel: controlNetModel,
+            strength: strength,
+            preprocessor: preprocessor
+        )
+
+        let promptData = try JSONSerialization.data(withJSONObject: [
+            "prompt": workflow,
+            "client_id": clientId
+        ])
+
+        let responseData = try await post("/prompt", body: promptData)
+
+        guard let responseJSON = try? JSONSerialization.jsonObject(with: responseData) as? [String: Any],
+              let promptId = responseJSON["prompt_id"] as? String else {
+            throw BackendError.decodingFailed("No prompt_id in ControlNet response")
+        }
+
+        let images = try await pollForImages(promptId: promptId)
+
+        let generationTime = Date().timeIntervalSince(startTime)
+        let metadata = GenerationMetadata(
+            prompt: request.prompt,
+            negativePrompt: request.negativePrompt,
+            steps: request.steps,
+            samplerName: request.samplerName,
+            cfgScale: request.cfgScale,
+            width: request.width,
+            height: request.height,
+            seed: request.seed,
+            backendName: "ComfyUI+ControlNet",
+            generationTime: generationTime
+        )
+
+        return ImageGenerationResult(images: images, metadata: metadata)
+    }
+
+    /// Build a ComfyUI workflow with ControlNet conditioning
+    private func buildControlNetWorkflow(
+        _ request: ImageGenerationRequest,
+        controlImageName: String,
+        controlNetModel: String,
+        strength: Double,
+        preprocessor: String?
+    ) -> [String: Any] {
+        var workflow: [String: Any] = [
+            // Checkpoint loader
+            "4": [
+                "class_type": "CheckpointLoaderSimple",
+                "inputs": ["ckpt_name": "v1-5-pruned-emaonly.safetensors"]
+            ],
+            // Positive prompt
+            "6": [
+                "class_type": "CLIPTextEncode",
+                "inputs": [
+                    "text": request.prompt,
+                    "clip": ["4", 1]
+                ] as [String : Any]
+            ] as [String : Any],
+            // Negative prompt
+            "7": [
+                "class_type": "CLIPTextEncode",
+                "inputs": [
+                    "text": request.negativePrompt,
+                    "clip": ["4", 1]
+                ] as [String : Any]
+            ] as [String : Any],
+            // Empty latent
+            "5": [
+                "class_type": "EmptyLatentImage",
+                "inputs": [
+                    "width": request.width,
+                    "height": request.height,
+                    "batch_size": request.batchSize
+                ] as [String : Any]
+            ] as [String : Any],
+            // Load control image
+            "10": [
+                "class_type": "LoadImage",
+                "inputs": ["image": controlImageName]
+            ],
+            // Load ControlNet model
+            "11": [
+                "class_type": "ControlNetLoader",
+                "inputs": ["control_net_name": controlNetModel]
+            ],
+            // Apply ControlNet
+            "12": [
+                "class_type": "ControlNetApply",
+                "inputs": [
+                    "conditioning": ["6", 0],
+                    "control_net": ["11", 0],
+                    "image": preprocessor != nil ? ["13", 0] : ["10", 0],
+                    "strength": strength
+                ] as [String : Any]
+            ] as [String : Any],
+            // KSampler with ControlNet conditioning
+            "3": [
+                "class_type": "KSampler",
+                "inputs": [
+                    "seed": request.seed == -1 ? Int.random(in: 0...Int(Int32.max)) : request.seed,
+                    "steps": request.steps,
+                    "cfg": request.cfgScale,
+                    "sampler_name": mapSamplerName(request.samplerName),
+                    "scheduler": "normal",
+                    "denoise": 1.0,
+                    "model": ["4", 0],
+                    "positive": ["12", 0],
+                    "negative": ["7", 0],
+                    "latent_image": ["5", 0]
+                ] as [String : Any]
+            ] as [String : Any],
+            // VAE Decode
+            "8": [
+                "class_type": "VAEDecode",
+                "inputs": [
+                    "samples": ["3", 0],
+                    "vae": ["4", 2]
+                ] as [String : Any]
+            ] as [String : Any],
+            // Save Image
+            "9": [
+                "class_type": "SaveImage",
+                "inputs": [
+                    "filename_prefix": "AIStudio_controlnet",
+                    "images": ["8", 0]
+                ] as [String : Any]
+            ] as [String : Any]
+        ]
+
+        // Add preprocessor node if specified
+        if let preprocessor {
+            workflow["13"] = [
+                "class_type": "AIO_Preprocessor",
+                "inputs": [
+                    "preprocessor": preprocessor,
+                    "image": ["10", 0]
+                ] as [String : Any]
+            ] as [String : Any]
+        }
+
+        return workflow
+    }
+
     // MARK: - HTTP Helpers
 
     private func get(_ path: String) async throws -> Data {

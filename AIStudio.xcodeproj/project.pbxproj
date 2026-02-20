@@ -65,6 +65,12 @@
 		A100000000000000000047B1 /* LLMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000047 /* LLMSettingsView.swift */; };
 		/* Widget files */
 		A100000000000000000050B1 /* WidgetDataSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000050 /* WidgetDataSync.swift */; };
+		A100000000000000000060B1 /* GenerationQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000060 /* GenerationQueue.swift */; };
+		A100000000000000000061B1 /* GenerationQueueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000061 /* GenerationQueueView.swift */; };
+		A100000000000000000062B1 /* PromptHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000062 /* PromptHistory.swift */; };
+		A100000000000000000063B1 /* RetryHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000063 /* RetryHandler.swift */; };
+		A100000000000000000064B1 /* ImageComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000064 /* ImageComparisonView.swift */; };
+		A100000000000000000065B1 /* PromptHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000065 /* PromptHistoryView.swift */; };
 		W1DGET1AIST_APPEXEMB123 /* AIStudio Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		W1DGET1AIST_BLDMAIN1234 /* AIStudioWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCMAIN1234 /* AIStudioWidget.swift */; };
 		W1DGET1AIST_BLDDATA1234 /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */; };
@@ -157,6 +163,12 @@
 		A10000000000000000000047 /* LLMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsView.swift; sourceTree = "<group>"; };
 		/* Widget files */
 		A10000000000000000000050 /* WidgetDataSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataSync.swift; sourceTree = "<group>"; };
+		A10000000000000000000060 /* GenerationQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationQueue.swift; sourceTree = "<group>"; };
+		A10000000000000000000061 /* GenerationQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationQueueView.swift; sourceTree = "<group>"; };
+		A10000000000000000000062 /* PromptHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptHistory.swift; sourceTree = "<group>"; };
+		A10000000000000000000063 /* RetryHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetryHandler.swift; sourceTree = "<group>"; };
+		A10000000000000000000064 /* ImageComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageComparisonView.swift; sourceTree = "<group>"; };
+		A10000000000000000000065 /* PromptHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptHistoryView.swift; sourceTree = "<group>"; };
 		W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "AIStudio Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		W1DGET1AIST_SRCMAIN1234 /* AIStudioWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStudioWidget.swift; sourceTree = "<group>"; };
 		W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetData.swift; sourceTree = "<group>"; };
@@ -236,6 +248,8 @@
 				A10000000000000000000026 /* MediaExportService.swift */,
 				A10000000000000000000042 /* LLMBackendManager.swift */,
 				A10000000000000000000050 /* WidgetDataSync.swift */,
+				A10000000000000000000060 /* GenerationQueue.swift */,
+				A10000000000000000000062 /* PromptHistory.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -274,6 +288,9 @@
 				A1000000000000000000000E /* ImageParametersView.swift */,
 				A1000000000000000000000F /* ImagePreviewView.swift */,
 				A10000000000000000000010 /* BackendSelectorView.swift */,
+				A10000000000000000000061 /* GenerationQueueView.swift */,
+				A10000000000000000000064 /* ImageComparisonView.swift */,
+				A10000000000000000000065 /* PromptHistoryView.swift */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -336,6 +353,7 @@
 				A10000000000000000000016 /* SecurityUtils.swift */,
 				A10000000000000000000017 /* ImageUtils.swift */,
 				A10000000000000000000018 /* FileOrganizer.swift */,
+				A10000000000000000000063 /* RetryHandler.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -524,6 +542,12 @@
 				A100000000000000000046B1 /* LLMBackendStatusMenu.swift in Sources */,
 				A100000000000000000047B1 /* LLMSettingsView.swift in Sources */,
 				A100000000000000000050B1 /* WidgetDataSync.swift in Sources */,
+				A100000000000000000060B1 /* GenerationQueue.swift in Sources */,
+				A100000000000000000061B1 /* GenerationQueueView.swift in Sources */,
+				A100000000000000000062B1 /* PromptHistory.swift in Sources */,
+				A100000000000000000063B1 /* RetryHandler.swift in Sources */,
+				A100000000000000000064B1 /* ImageComparisonView.swift in Sources */,
+				A100000000000000000065B1 /* PromptHistoryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -559,7 +583,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -570,7 +594,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.2.0;
+				MARKETING_VERSION = 2.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -589,7 +613,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -600,7 +624,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.2.0;
+				MARKETING_VERSION = 2.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -735,7 +759,7 @@
 				CODE_SIGN_ENTITLEMENTS = "AIStudio Widget/AIStudio_Widget.entitlements";
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AIStudio Widget/Info.plist";
@@ -747,7 +771,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.2.0;
+				MARKETING_VERSION = 2.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -765,7 +789,7 @@
 				CODE_SIGN_ENTITLEMENTS = "AIStudio Widget/AIStudio_Widget.entitlements";
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AIStudio Widget/Info.plist";
@@ -777,7 +801,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.2.0;
+				MARKETING_VERSION = 2.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

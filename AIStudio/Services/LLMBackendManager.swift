@@ -298,8 +298,14 @@ class LLMBackendManager: ObservableObject {
                     switch backend {
                     case .ollama:
                         try await streamOllama(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
+                    case .tinyLLM:
+                        let tinyLLMURL = self.backends[.tinyLLM]?.url ?? "http://localhost:8000"
+                        try await self.streamOpenAICompatible(baseURL: tinyLLMURL, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
+                    case .openWebUI:
+                        let openWebUIURL = self.backends[.openWebUI]?.url ?? "http://localhost:8080"
+                        try await self.streamOpenAICompatible(baseURL: openWebUIURL, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
                     default:
-                        // Non-streaming fallback for other backends
+                        // Non-streaming fallback for TinyChat and MLX
                         let result = try await generate(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
                         continuation.yield(result)
                         continuation.finish()
@@ -405,6 +411,72 @@ class LLMBackendManager: ObservableObject {
             if let done = json["done"] as? Bool, done {
                 break
             }
+        }
+
+        continuation.finish()
+    }
+
+    // MARK: - OpenAI-Compatible Streaming (TinyLLM, OpenWebUI)
+
+    private func streamOpenAICompatible(
+        baseURL: String,
+        prompt: String,
+        systemPrompt: String?,
+        messages: [ChatMessage],
+        temperature: Float,
+        maxTokens: Int,
+        continuation: AsyncThrowingStream<String, Error>.Continuation
+    ) async throws {
+        guard let url = URL(string: "\(baseURL)/v1/chat/completions") else {
+            throw LLMError.invalidURL
+        }
+
+        var apiMessages: [[String: String]] = []
+        if let system = systemPrompt, !system.isEmpty {
+            apiMessages.append(["role": "system", "content": system])
+        }
+        for msg in messages where msg.role != .system {
+            apiMessages.append(["role": msg.role.rawValue, "content": msg.content])
+        }
+        if messages.last?.role != .user || messages.last?.content != prompt {
+            apiMessages.append(["role": "user", "content": prompt])
+        }
+
+        let body: [String: Any] = [
+            "model": selectedOllamaModel,
+            "messages": apiMessages,
+            "temperature": temperature,
+            "max_tokens": maxTokens,
+            "stream": true
+        ]
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        request.timeoutInterval = 300
+
+        let (bytes, response) = try await session.bytes(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw LLMError.httpError((response as? HTTPURLResponse)?.statusCode ?? 0)
+        }
+
+        // SSE format: "data: {json}\n\n" with "data: [DONE]" at end
+        for try await line in bytes.lines {
+            guard line.hasPrefix("data: ") else { continue }
+            let payload = String(line.dropFirst(6))
+
+            if payload == "[DONE]" { break }
+
+            guard let lineData = payload.data(using: .utf8),
+                  let json = try? JSONSerialization.jsonObject(with: lineData) as? [String: Any],
+                  let choices = json["choices"] as? [[String: Any]],
+                  let delta = choices.first?["delta"] as? [String: Any],
+                  let content = delta["content"] as? String else {
+                continue
+            }
+
+            continuation.yield(content)
         }
 
         continuation.finish()

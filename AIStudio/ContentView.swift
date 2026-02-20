@@ -63,5 +63,10 @@ struct ContentView: View {
                 .tag(StudioTab.gallery)
         }
         .frame(minWidth: 900, minHeight: 600)
+        .onReceive(NotificationCenter.default.publisher(for: .switchTab)) { notification in
+            if let tab = notification.object as? StudioTab {
+                selectedTab = tab
+            }
+        }
     }
 }

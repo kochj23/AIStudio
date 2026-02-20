@@ -20,6 +20,13 @@ actor PythonDaemonService {
     private let pythonPath: String
     private let scriptPath: String
 
+    /// Crash recovery state
+    private var crashCount: Int = 0
+    private var lastCrashTime: Date?
+    private let maxCrashesBeforeGiveUp: Int = 5
+    private let crashCountResetInterval: TimeInterval = 300 // Reset crash count after 5 min stable
+    private var lastRequest: (command: String, params: [String: Any])?
+
     init(pythonPath: String? = nil, scriptPath: String? = nil) {
         self.pythonPath = pythonPath ?? "/usr/bin/python3"
 
@@ -115,6 +122,7 @@ actor PythonDaemonService {
         if !isRunning {
             try await start()
         }
+        lastRequest = (command, params)
 
         let requestId = UUID().uuidString
         var request = params
@@ -150,11 +158,52 @@ actor PythonDaemonService {
     }
 
     private func handleTermination() {
+        let wasPreviouslyRunning = isRunning
         isRunning = false
+
+        // Fail all pending requests
         for (_, continuation) in pendingCallbacks {
             continuation.resume(throwing: BackendError.backendSpecific("Python daemon terminated unexpectedly"))
         }
         pendingCallbacks.removeAll()
-        logWarning("Python daemon terminated", category: "PythonDaemon")
+
+        guard wasPreviouslyRunning else { return }
+
+        // Reset crash count if stable for a while
+        if let lastCrash = lastCrashTime,
+           Date().timeIntervalSince(lastCrash) > crashCountResetInterval {
+            crashCount = 0
+        }
+
+        crashCount += 1
+        lastCrashTime = Date()
+
+        if crashCount <= maxCrashesBeforeGiveUp {
+            logWarning("Python daemon crashed (\(crashCount)/\(maxCrashesBeforeGiveUp)). Auto-restarting...", category: "PythonDaemon")
+            Task {
+                // Exponential backoff: 1s, 2s, 4s, 8s, 16s
+                let delay = UInt64(pow(2.0, Double(crashCount - 1))) * 1_000_000_000
+                try? await Task.sleep(nanoseconds: delay)
+                do {
+                    try await start()
+                    logInfo("Python daemon restarted successfully after crash", category: "PythonDaemon")
+                } catch {
+                    logError("Python daemon restart failed: \(error.localizedDescription)", category: "PythonDaemon")
+                }
+            }
+        } else {
+            logError("Python daemon crashed \(crashCount) times. Giving up auto-restart. Manual restart required.", category: "PythonDaemon")
+        }
+    }
+
+    /// Reset crash counter (call after successful manual restart)
+    func resetCrashCount() {
+        crashCount = 0
+        lastCrashTime = nil
+    }
+
+    /// Current crash recovery state
+    var daemonStatus: (isRunning: Bool, crashCount: Int) {
+        (isRunning, crashCount)
     }
 }

@@ -46,6 +46,7 @@ class ImageGenerationViewModel: ObservableObject {
     @Published var availableSamplers: [A1111Sampler] = []
 
     private weak var backendManager: BackendManager?
+    private weak var generationQueue: GenerationQueue?
     private var generationTask: Task<Void, Never>?
 
     var selectedImage: GeneratedImage? {
@@ -59,8 +60,9 @@ class ImageGenerationViewModel: ObservableObject {
 
     // MARK: - Setup
 
-    func configure(with backendManager: BackendManager) {
+    func configure(with backendManager: BackendManager, queue: GenerationQueue? = nil) {
         self.backendManager = backendManager
+        self.generationQueue = queue
         loadDefaults()
     }
 
@@ -133,6 +135,18 @@ class ImageGenerationViewModel: ObservableObject {
                 if AppSettings.shared.autoSaveImages {
                     await autoSaveImages(result)
                 }
+
+                // Record prompt in history
+                PromptHistory.shared.record(
+                    prompt: sanitizedPrompt,
+                    negativePrompt: sanitizedNegative,
+                    steps: self.steps,
+                    cfgScale: self.cfgScale,
+                    width: self.width,
+                    height: self.height,
+                    seed: result.metadata.seed,
+                    samplerName: self.samplerName
+                )
 
                 logInfo("Generated \(result.images.count) image(s) in \(result.metadata.formattedTime)", category: "ImageGen")
             } catch is CancellationError {
@@ -221,6 +235,47 @@ class ImageGenerationViewModel: ObservableObject {
         let temp = width
         width = height
         height = temp
+    }
+
+    // MARK: - Queue Integration
+
+    /// Add current settings to the generation queue
+    func addToQueue() {
+        guard let generationQueue else { return }
+        let params = GenerationParameters(
+            steps: steps,
+            cfgScale: cfgScale,
+            width: width,
+            height: height,
+            seed: seed,
+            samplerName: samplerName,
+            batchSize: batchSize
+        )
+        let added = generationQueue.enqueue(
+            prompt: SecurityUtils.sanitizePrompt(prompt),
+            negativePrompt: SecurityUtils.sanitizePrompt(negativePrompt),
+            parameters: params
+        )
+        if added {
+            statusMessage = "Added to queue (\(generationQueue.pendingCount) pending)"
+        } else {
+            errorMessage = "Queue is full"
+        }
+    }
+
+    // MARK: - Prompt History Integration
+
+    /// Load settings from a saved prompt entry
+    func loadFromPromptEntry(_ entry: PromptEntry) {
+        prompt = entry.prompt
+        negativePrompt = entry.negativePrompt
+        steps = entry.parameters.steps
+        cfgScale = entry.parameters.cfgScale
+        width = entry.parameters.width
+        height = entry.parameters.height
+        seed = entry.parameters.seed
+        samplerName = entry.parameters.samplerName
+        statusMessage = "Loaded prompt from history"
     }
 
     /// Standard SD sizes
