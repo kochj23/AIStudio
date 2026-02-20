@@ -1,0 +1,42 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserdata
+*.xcworkspacedata
+xcuserdata/
+*.xccheckout
+*.moved-aside
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Swift Package Manager
+.build/
+Packages/
+Package.pins
+Package.resolved
+
+# Secrets and credentials
+*.p12
+*.cer
+*.mobileprovision
+secrets.json
+credentials.json
+.env
+config.plist
+
+# Archives
+*.xcarchive
+*.ipa
+*.dmg
+
+# Temporary files
+*.swp
+*.swo
+*~
