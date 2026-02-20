@@ -18,18 +18,20 @@ class BackendManager: ObservableObject {
     @Published var isRefreshing: Bool = false
 
     private var a1111Service: Automatic1111Service
-    // Phase 2: private var comfyUIService: ComfyUIService
-    // Phase 2: private var mlxImageService: MLXImageService
-    // Phase 5: private var swarmUIService: SwarmUIService
+    private var comfyUIService: ComfyUIService
+    private var swarmUIService: SwarmUIService
+    private var mlxImageService: MLXImageService
+
+    let pythonDaemon: PythonDaemonService
 
     private var cancellables = Set<AnyCancellable>()
 
     var activeBackend: (any ImageBackendProtocol)? {
         switch activeBackendType {
         case .automatic1111: return a1111Service
-        case .comfyUI: return nil // Phase 2
-        case .swarmUI: return nil // Phase 5
-        case .mlxNative: return nil // Phase 2
+        case .comfyUI: return comfyUIService
+        case .swarmUI: return swarmUIService
+        case .mlxNative: return mlxImageService
         }
     }
 
@@ -44,11 +46,16 @@ class BackendManager: ObservableObject {
     init() {
         let settings = AppSettings.shared
         self.a1111Service = Automatic1111Service(baseURL: settings.a1111URL)
+        self.comfyUIService = ComfyUIService(baseURL: settings.comfyUIURL)
+        self.swarmUIService = SwarmUIService(baseURL: settings.swarmUIURL)
+        self.pythonDaemon = PythonDaemonService(pythonPath: settings.pythonPath)
+        self.mlxImageService = MLXImageService(daemon: pythonDaemon)
 
         // Initialize backend configurations
         backends[.automatic1111] = BackendConfiguration(type: .automatic1111, url: settings.a1111URL)
         backends[.comfyUI] = BackendConfiguration(type: .comfyUI, url: settings.comfyUIURL)
         backends[.swarmUI] = BackendConfiguration(type: .swarmUI, url: settings.swarmUIURL)
+        backends[.mlxNative] = BackendConfiguration(type: .mlxNative)
 
         if let savedType = BackendType(rawValue: settings.activeBackendType) {
             activeBackendType = savedType
@@ -61,6 +68,24 @@ class BackendManager: ObservableObject {
                 guard let self else { return }
                 Task { await self.a1111Service.updateBaseURL(url) }
                 self.backends[.automatic1111]?.url = url
+            }
+            .store(in: &cancellables)
+
+        settings.$comfyUIURL
+            .removeDuplicates()
+            .sink { [weak self] url in
+                guard let self else { return }
+                Task { await self.comfyUIService.updateBaseURL(url) }
+                self.backends[.comfyUI]?.url = url
+            }
+            .store(in: &cancellables)
+
+        settings.$swarmUIURL
+            .removeDuplicates()
+            .sink { [weak self] url in
+                guard let self else { return }
+                Task { await self.swarmUIService.updateBaseURL(url) }
+                self.backends[.swarmUI]?.url = url
             }
             .store(in: &cancellables)
     }
@@ -77,8 +102,20 @@ class BackendManager: ObservableObject {
                 return (.automatic1111, status)
             }
 
-            // Phase 2: Add ComfyUI, MLX health checks
-            // Phase 5: Add SwarmUI health check
+            group.addTask { [comfyUIService] in
+                let status = await comfyUIService.checkHealth()
+                return (.comfyUI, status)
+            }
+
+            group.addTask { [swarmUIService] in
+                let status = await swarmUIService.checkHealth()
+                return (.swarmUI, status)
+            }
+
+            group.addTask { [mlxImageService] in
+                let status = await mlxImageService.checkHealth()
+                return (.mlxNative, status)
+            }
 
             for await (type, status) in group {
                 backends[type]?.status = status
@@ -89,13 +126,18 @@ class BackendManager: ObservableObject {
     func refreshBackend(_ type: BackendType) async {
         backends[type]?.status = .checking
 
+        let status: BackendStatus
         switch type {
         case .automatic1111:
-            let status = await a1111Service.checkHealth()
-            backends[type]?.status = status
-        default:
-            backends[type]?.status = .disconnected
+            status = await a1111Service.checkHealth()
+        case .comfyUI:
+            status = await comfyUIService.checkHealth()
+        case .swarmUI:
+            status = await swarmUIService.checkHealth()
+        case .mlxNative:
+            status = await mlxImageService.checkHealth()
         }
+        backends[type]?.status = status
     }
 
     // MARK: - Backend Selection

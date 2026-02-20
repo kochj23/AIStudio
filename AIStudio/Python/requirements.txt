@@ -1,0 +1,26 @@
+# AIStudio Python Dependencies
+# Install: pip install -r requirements.txt
+
+# MLX core
+mlx>=0.5.0
+
+# Image generation (choose one)
+# diffusionkit    # Apple's MLX diffusion library
+# mflux           # Alternative MLX diffusion
+
+# Text-to-speech (7 engines)
+mlx-audio>=0.1.0
+
+# Voice cloning
+f5-tts-mlx>=0.1.0
+
+# Speech-to-text
+mlx-whisper>=0.1.0
+
+# Music generation (optional, can use transformers fallback)
+# transformers
+# torch
+
+# Common
+numpy
+Pillow

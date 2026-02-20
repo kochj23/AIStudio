@@ -32,6 +32,28 @@
 		A100000000000000000017B1 /* ImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017 /* ImageUtils.swift */; };
 		A100000000000000000018B1 /* FileOrganizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* FileOrganizer.swift */; };
 		A10000000000000000001AB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001A /* Assets.xcassets */; };
+		/* Phase 2-5 new files */
+		A100000000000000000020B1 /* ComfyUIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000020 /* ComfyUIService.swift */; };
+		A100000000000000000021B1 /* PythonDaemonService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* PythonDaemonService.swift */; };
+		A100000000000000000022B1 /* MLXImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000022 /* MLXImageService.swift */; };
+		A100000000000000000023B1 /* MLXAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000023 /* MLXAudioService.swift */; };
+		A100000000000000000024B1 /* SwarmUIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000024 /* SwarmUIService.swift */; };
+		A100000000000000000025B1 /* GalleryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* GalleryService.swift */; };
+		A100000000000000000026B1 /* MediaExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000026 /* MediaExportService.swift */; };
+		A100000000000000000027B1 /* VideoGenerationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000027 /* VideoGenerationViewModel.swift */; };
+		A100000000000000000028B1 /* AudioViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000028 /* AudioViewModel.swift */; };
+		A100000000000000000029B1 /* GalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000029 /* GalleryViewModel.swift */; };
+		A10000000000000000002AB1 /* VideoGenerationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002A /* VideoGenerationView.swift */; };
+		A10000000000000000002BB1 /* VideoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002B /* VideoPreviewView.swift */; };
+		A10000000000000000002CB1 /* AudioTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002C /* AudioTabView.swift */; };
+		A10000000000000000002DB1 /* TTSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002D /* TTSView.swift */; };
+		A10000000000000000002EB1 /* VoiceCloningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002E /* VoiceCloningView.swift */; };
+		A10000000000000000002FB1 /* MusicGenerationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002F /* MusicGenerationView.swift */; };
+		A100000000000000000030B1 /* SpeechToTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000030 /* SpeechToTextView.swift */; };
+		A100000000000000000031B1 /* AudioPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000031 /* AudioPlayerView.swift */; };
+		A100000000000000000032B1 /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000032 /* GalleryView.swift */; };
+		A100000000000000000033B1 /* GalleryGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000033 /* GalleryGridView.swift */; };
+		A100000000000000000034B1 /* MediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000034 /* MediaDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +84,28 @@
 		A10000000000000000000019 /* AIStudio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIStudio.entitlements; sourceTree = "<group>"; };
 		A1000000000000000000001A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1000000000000000000001B /* AIStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AIStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		/* Phase 2-5 new files */
+		A10000000000000000000020 /* ComfyUIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComfyUIService.swift; sourceTree = "<group>"; };
+		A10000000000000000000021 /* PythonDaemonService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PythonDaemonService.swift; sourceTree = "<group>"; };
+		A10000000000000000000022 /* MLXImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLXImageService.swift; sourceTree = "<group>"; };
+		A10000000000000000000023 /* MLXAudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLXAudioService.swift; sourceTree = "<group>"; };
+		A10000000000000000000024 /* SwarmUIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwarmUIService.swift; sourceTree = "<group>"; };
+		A10000000000000000000025 /* GalleryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryService.swift; sourceTree = "<group>"; };
+		A10000000000000000000026 /* MediaExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaExportService.swift; sourceTree = "<group>"; };
+		A10000000000000000000027 /* VideoGenerationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGenerationViewModel.swift; sourceTree = "<group>"; };
+		A10000000000000000000028 /* AudioViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioViewModel.swift; sourceTree = "<group>"; };
+		A10000000000000000000029 /* GalleryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewModel.swift; sourceTree = "<group>"; };
+		A1000000000000000000002A /* VideoGenerationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGenerationView.swift; sourceTree = "<group>"; };
+		A1000000000000000000002B /* VideoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewView.swift; sourceTree = "<group>"; };
+		A1000000000000000000002C /* AudioTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTabView.swift; sourceTree = "<group>"; };
+		A1000000000000000000002D /* TTSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSView.swift; sourceTree = "<group>"; };
+		A1000000000000000000002E /* VoiceCloningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceCloningView.swift; sourceTree = "<group>"; };
+		A1000000000000000000002F /* MusicGenerationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicGenerationView.swift; sourceTree = "<group>"; };
+		A10000000000000000000030 /* SpeechToTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechToTextView.swift; sourceTree = "<group>"; };
+		A10000000000000000000031 /* AudioPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerView.swift; sourceTree = "<group>"; };
+		A10000000000000000000032 /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
+		A10000000000000000000033 /* GalleryGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryGridView.swift; sourceTree = "<group>"; };
+		A10000000000000000000034 /* MediaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,7 +160,14 @@
 			children = (
 				A10000000000000000000008 /* ImageBackendProtocol.swift */,
 				A10000000000000000000009 /* Automatic1111Service.swift */,
+				A10000000000000000000020 /* ComfyUIService.swift */,
+				A10000000000000000000024 /* SwarmUIService.swift */,
+				A10000000000000000000022 /* MLXImageService.swift */,
+				A10000000000000000000023 /* MLXAudioService.swift */,
+				A10000000000000000000021 /* PythonDaemonService.swift */,
 				A1000000000000000000000A /* BackendManager.swift */,
+				A10000000000000000000025 /* GalleryService.swift */,
+				A10000000000000000000026 /* MediaExportService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -125,6 +176,9 @@
 			isa = PBXGroup;
 			children = (
 				A1000000000000000000000B /* ImageGenerationViewModel.swift */,
+				A10000000000000000000027 /* VideoGenerationViewModel.swift */,
+				A10000000000000000000028 /* AudioViewModel.swift */,
+				A10000000000000000000029 /* GalleryViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -133,11 +187,11 @@
 			isa = PBXGroup;
 			children = (
 				C10000000000000000000007 /* Images */,
-				C10000000000000000000008 /* Common */,
-				C10000000000000000000009 /* Settings */,
 				C1000000000000000000000A /* Videos */,
 				C1000000000000000000000B /* Audio */,
 				C1000000000000000000000C /* Gallery */,
+				C10000000000000000000008 /* Common */,
+				C10000000000000000000009 /* Settings */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -175,6 +229,8 @@
 		C1000000000000000000000A /* Videos */ = {
 			isa = PBXGroup;
 			children = (
+				A1000000000000000000002A /* VideoGenerationView.swift */,
+				A1000000000000000000002B /* VideoPreviewView.swift */,
 			);
 			path = Videos;
 			sourceTree = "<group>";
@@ -182,6 +238,12 @@
 		C1000000000000000000000B /* Audio */ = {
 			isa = PBXGroup;
 			children = (
+				A1000000000000000000002C /* AudioTabView.swift */,
+				A1000000000000000000002D /* TTSView.swift */,
+				A1000000000000000000002E /* VoiceCloningView.swift */,
+				A1000000000000000000002F /* MusicGenerationView.swift */,
+				A10000000000000000000030 /* SpeechToTextView.swift */,
+				A10000000000000000000031 /* AudioPlayerView.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -189,6 +251,9 @@
 		C1000000000000000000000C /* Gallery */ = {
 			isa = PBXGroup;
 			children = (
+				A10000000000000000000032 /* GalleryView.swift */,
+				A10000000000000000000033 /* GalleryGridView.swift */,
+				A10000000000000000000034 /* MediaDetailView.swift */,
 			);
 			path = Gallery;
 			sourceTree = "<group>";
@@ -305,6 +370,27 @@
 				A100000000000000000016B1 /* SecurityUtils.swift in Sources */,
 				A100000000000000000017B1 /* ImageUtils.swift in Sources */,
 				A100000000000000000018B1 /* FileOrganizer.swift in Sources */,
+				A100000000000000000020B1 /* ComfyUIService.swift in Sources */,
+				A100000000000000000021B1 /* PythonDaemonService.swift in Sources */,
+				A100000000000000000022B1 /* MLXImageService.swift in Sources */,
+				A100000000000000000023B1 /* MLXAudioService.swift in Sources */,
+				A100000000000000000024B1 /* SwarmUIService.swift in Sources */,
+				A100000000000000000025B1 /* GalleryService.swift in Sources */,
+				A100000000000000000026B1 /* MediaExportService.swift in Sources */,
+				A100000000000000000027B1 /* VideoGenerationViewModel.swift in Sources */,
+				A100000000000000000028B1 /* AudioViewModel.swift in Sources */,
+				A100000000000000000029B1 /* GalleryViewModel.swift in Sources */,
+				A10000000000000000002AB1 /* VideoGenerationView.swift in Sources */,
+				A10000000000000000002BB1 /* VideoPreviewView.swift in Sources */,
+				A10000000000000000002CB1 /* AudioTabView.swift in Sources */,
+				A10000000000000000002DB1 /* TTSView.swift in Sources */,
+				A10000000000000000002EB1 /* VoiceCloningView.swift in Sources */,
+				A10000000000000000002FB1 /* MusicGenerationView.swift in Sources */,
+				A100000000000000000030B1 /* SpeechToTextView.swift in Sources */,
+				A100000000000000000031B1 /* AudioPlayerView.swift in Sources */,
+				A100000000000000000032B1 /* GalleryView.swift in Sources */,
+				A100000000000000000033B1 /* GalleryGridView.swift in Sources */,
+				A100000000000000000034B1 /* MediaDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,7 +407,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -332,7 +418,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -350,7 +436,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -361,7 +447,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

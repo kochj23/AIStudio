@@ -36,45 +36,24 @@ struct ContentView: View {
                 }
                 .tag(StudioTab.images)
 
-            PlaceholderTab(title: "Video Generation", icon: StudioTab.videos.icon, description: "Coming in Phase 3")
+            VideoGenerationView()
                 .tabItem {
                     Label(StudioTab.videos.rawValue, systemImage: StudioTab.videos.icon)
                 }
                 .tag(StudioTab.videos)
 
-            PlaceholderTab(title: "Audio Studio", icon: StudioTab.audio.icon, description: "Coming in Phase 4")
+            AudioTabView()
                 .tabItem {
                     Label(StudioTab.audio.rawValue, systemImage: StudioTab.audio.icon)
                 }
                 .tag(StudioTab.audio)
 
-            PlaceholderTab(title: "Gallery", icon: StudioTab.gallery.icon, description: "Coming in Phase 5")
+            GalleryView()
                 .tabItem {
                     Label(StudioTab.gallery.rawValue, systemImage: StudioTab.gallery.icon)
                 }
                 .tag(StudioTab.gallery)
         }
         .frame(minWidth: 900, minHeight: 600)
-    }
-}
-
-struct PlaceholderTab: View {
-    let title: String
-    let icon: String
-    let description: String
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 64))
-                .foregroundColor(.secondary)
-            Text(title)
-                .font(.title)
-                .fontWeight(.semibold)
-            Text(description)
-                .font(.body)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
