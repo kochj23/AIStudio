@@ -18,6 +18,7 @@ AI Studio connects to local Stable Diffusion backends (Automatic1111, ComfyUI, S
 - **SwarmUI** session-based image generation
 - **MLX Native** — run Stable Diffusion directly on Apple Silicon via diffusionkit/mflux
 - **ControlNet** — guided generation with control images, preprocessors, and configurable strength (ComfyUI)
+- **Model picker** — browse and select from available checkpoints per backend, auto-selects on connect
 - Parameter controls: steps, CFG scale, sampler, size, seed, batch size
 - Auto-save with date-organized output directories
 - Metadata JSON export alongside each image
@@ -195,6 +196,7 @@ AIStudio/
 - Python daemon crash recovery (auto-restart)
 - Drag & drop for image import
 - Prompt auto-recording with deduplication
+- Model picker — select checkpoints per backend with auto-detection
 
 ### v2.2.0 (February 2026)
 - WidgetKit extension with small/medium/large views
