@@ -58,36 +58,39 @@ class VideoGenerationViewModel: ObservableObject {
 
         generationTask = Task {
             do {
-                // Build AnimateDiff workflow for ComfyUI
-                _ = buildAnimateDiffWorkflow()
                 let comfyService = ComfyUIService(baseURL: AppSettings.shared.comfyUIURL)
 
-                // Submit as a txt2img request with AnimateDiff nodes
-                let request = ImageGenerationRequest(
+                statusMessage = "Submitting AnimateDiff workflow..."
+
+                let result = try await comfyService.generateVideo(
                     prompt: prompt,
                     negativePrompt: negativePrompt,
+                    frameCount: frameCount,
                     steps: steps,
-                    samplerName: "euler_ancestral",
                     cfgScale: cfgScale,
+                    samplerName: "euler_ancestral",
                     width: width,
                     height: height,
                     seed: seed
                 )
 
-                let result = try await comfyService.textToImage(request)
+                guard !result.images.isEmpty else {
+                    throw BackendError.noImagesReturned
+                }
 
-                // If frames are returned, combine into video
+                // Combine frames into MP4 video
                 if result.images.count > 1 {
+                    statusMessage = "Combining \(result.images.count) frames into video..."
                     let videoURL = try await combineFramesToVideo(result.images)
                     generatedVideoURL = videoURL
-                    statusMessage = "Video generated (\(result.images.count) frames)"
-                } else if let firstImage = result.images.first {
-                    // Single animated image — save directly
-                    let path = try FileOrganizer.saveGeneratedImage(
-                        firstImage.imageData, prompt: prompt, seed: seed
-                    )
-                    generatedVideoURL = URL(fileURLWithPath: path)
-                    statusMessage = "Done in \(result.metadata.formattedTime)"
+                    statusMessage = "Video generated (\(result.images.count) frames, \(result.metadata.formattedTime))"
+                } else {
+                    // Single frame — AnimateDiff might not have produced animation.
+                    // Still combine into a short video so AVPlayer can display it.
+                    statusMessage = "Combining frames into video..."
+                    let videoURL = try await combineFramesToVideo(result.images)
+                    generatedVideoURL = videoURL
+                    statusMessage = "Done — only 1 frame returned (check AnimateDiff setup)"
                 }
 
                 logInfo("Video generated: \(result.images.count) frames", category: "VideoGen")
@@ -111,21 +114,6 @@ class VideoGenerationViewModel: ObservableObject {
     }
 
     // MARK: - Private
-
-    private func buildAnimateDiffWorkflow() -> [String: Any] {
-        // AnimateDiff workflow nodes for ComfyUI
-        return [
-            "prompt": prompt,
-            "negative_prompt": negativePrompt,
-            "frames": frameCount,
-            "fps": fps,
-            "steps": steps,
-            "cfg_scale": cfgScale,
-            "width": width,
-            "height": height,
-            "seed": seed,
-        ] as [String : Any]
-    }
 
     private func combineFramesToVideo(_ frames: [GeneratedImage]) async throws -> URL {
         let outputDir = FileOrganizer.outputDirectory(for: "videos")

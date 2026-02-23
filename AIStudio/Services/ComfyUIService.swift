@@ -594,6 +594,226 @@ actor ComfyUIService: ImageBackendProtocol {
         return workflow
     }
 
+    // MARK: - AnimateDiff Video Generation
+
+    /// Generate video frames using AnimateDiff workflow.
+    /// Requires the AnimateDiff-Evolved custom nodes installed in ComfyUI.
+    func generateVideo(
+        prompt: String,
+        negativePrompt: String,
+        frameCount: Int,
+        steps: Int,
+        cfgScale: Double,
+        samplerName: String,
+        width: Int,
+        height: Int,
+        seed: Int,
+        checkpoint: String? = nil
+    ) async throws -> ImageGenerationResult {
+        let startTime = Date()
+
+        // Check if AnimateDiff nodes are available
+        let hasAnimateDiff = await checkNodeExists("ADE_AnimateDiffLoaderWithContext")
+        guard hasAnimateDiff else {
+            throw BackendError.backendSpecific(
+                "AnimateDiff not installed in ComfyUI. Install ComfyUI-AnimateDiff-Evolved from the ComfyUI Manager."
+            )
+        }
+
+        // Detect available AnimateDiff motion model
+        let motionModel = try await detectAnimateDiffModel()
+
+        let workflow = buildAnimateDiffWorkflow(
+            prompt: prompt,
+            negativePrompt: negativePrompt,
+            frameCount: frameCount,
+            steps: steps,
+            cfgScale: cfgScale,
+            samplerName: samplerName,
+            width: width,
+            height: height,
+            seed: seed,
+            checkpoint: checkpoint ?? "sd_xl_base_1.0.safetensors",
+            motionModel: motionModel
+        )
+
+        let promptData = try JSONSerialization.data(withJSONObject: [
+            "prompt": workflow,
+            "client_id": clientId
+        ])
+
+        let responseData = try await post("/prompt", body: promptData)
+
+        guard let responseJSON = try? JSONSerialization.jsonObject(with: responseData) as? [String: Any],
+              let promptId = responseJSON["prompt_id"] as? String else {
+            // Check if ComfyUI returned a node error
+            if let responseJSON = try? JSONSerialization.jsonObject(with: responseData) as? [String: Any],
+               let error = responseJSON["error"] as? [String: Any],
+               let message = error["message"] as? String {
+                throw BackendError.backendSpecific("ComfyUI error: \(message)")
+            }
+            throw BackendError.decodingFailed("No prompt_id in AnimateDiff response")
+        }
+
+        let images = try await pollForImages(promptId: promptId)
+
+        let generationTime = Date().timeIntervalSince(startTime)
+        let metadata = GenerationMetadata(
+            prompt: prompt,
+            negativePrompt: negativePrompt,
+            steps: steps,
+            samplerName: samplerName,
+            cfgScale: cfgScale,
+            width: width,
+            height: height,
+            seed: seed,
+            backendName: "ComfyUI+AnimateDiff",
+            generationTime: generationTime
+        )
+
+        return ImageGenerationResult(images: images, metadata: metadata)
+    }
+
+    /// Check if a custom node type is available in ComfyUI
+    private func checkNodeExists(_ nodeType: String) async -> Bool {
+        guard let url = URL(string: "\(baseURL)/object_info/\(nodeType)") else { return false }
+        do {
+            var request = URLRequest(url: url)
+            request.timeoutInterval = 5
+            let (data, response) = try await session.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                return false
+            }
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                return json[nodeType] != nil
+            }
+            return false
+        } catch {
+            return false
+        }
+    }
+
+    /// Detect an available AnimateDiff motion model
+    private func detectAnimateDiffModel() async throws -> String {
+        let data = try await get("/object_info/ADE_AnimateDiffLoaderWithContext")
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let nodeInfo = json["ADE_AnimateDiffLoaderWithContext"] as? [String: Any],
+           let input = nodeInfo["input"] as? [String: Any],
+           let required = input["required"] as? [String: Any],
+           let modelName = required["model_name"] as? [[Any]],
+           let names = modelName.first as? [String],
+           let first = names.first {
+            return first
+        }
+        throw BackendError.backendSpecific(
+            "No AnimateDiff motion models found. Download a model (e.g. mm_sd_v15_v2.ckpt) to ComfyUI/models/animatediff_models/"
+        )
+    }
+
+    /// Build an AnimateDiff workflow for ComfyUI-AnimateDiff-Evolved
+    private func buildAnimateDiffWorkflow(
+        prompt: String,
+        negativePrompt: String,
+        frameCount: Int,
+        steps: Int,
+        cfgScale: Double,
+        samplerName: String,
+        width: Int,
+        height: Int,
+        seed: Int,
+        checkpoint: String,
+        motionModel: String
+    ) -> [String: Any] {
+        let resolvedSeed = seed == -1 ? Int.random(in: 0...Int(Int32.max)) : seed
+        return [
+            // Checkpoint loader
+            "4": [
+                "class_type": "CheckpointLoaderSimple",
+                "inputs": ["ckpt_name": checkpoint]
+            ],
+            // AnimateDiff context options
+            "10": [
+                "class_type": "ADE_AnimateDiffUniformContextOptions",
+                "inputs": [
+                    "context_length": min(frameCount, 16),
+                    "context_stride": 1,
+                    "context_overlap": 4,
+                    "context_schedule": "uniform",
+                    "closed_loop": false,
+                    "fuse_method": "flat",
+                    "use_on_equal_length": false,
+                ] as [String : Any]
+            ] as [String : Any],
+            // AnimateDiff motion model loader
+            "11": [
+                "class_type": "ADE_AnimateDiffLoaderWithContext",
+                "inputs": [
+                    "model": ["4", 0],
+                    "model_name": motionModel,
+                    "beta_schedule": "sqrt_linear (AnimateDiff)",
+                    "context_options": ["10", 0],
+                ] as [String : Any]
+            ] as [String : Any],
+            // Empty latent — batch_size = frame count
+            "5": [
+                "class_type": "EmptyLatentImage",
+                "inputs": [
+                    "width": width,
+                    "height": height,
+                    "batch_size": frameCount
+                ] as [String : Any]
+            ] as [String : Any],
+            // Positive prompt
+            "6": [
+                "class_type": "CLIPTextEncode",
+                "inputs": [
+                    "text": prompt,
+                    "clip": ["4", 1]
+                ] as [String : Any]
+            ] as [String : Any],
+            // Negative prompt
+            "7": [
+                "class_type": "CLIPTextEncode",
+                "inputs": [
+                    "text": negativePrompt,
+                    "clip": ["4", 1]
+                ] as [String : Any]
+            ] as [String : Any],
+            // KSampler — uses AnimateDiff-patched model
+            "3": [
+                "class_type": "KSampler",
+                "inputs": [
+                    "seed": resolvedSeed,
+                    "steps": steps,
+                    "cfg": cfgScale,
+                    "sampler_name": mapSamplerName(samplerName),
+                    "scheduler": "normal",
+                    "denoise": 1.0,
+                    "model": ["11", 0],
+                    "positive": ["6", 0],
+                    "negative": ["7", 0],
+                    "latent_image": ["5", 0]
+                ] as [String : Any]
+            ] as [String : Any],
+            // VAE Decode
+            "8": [
+                "class_type": "VAEDecode",
+                "inputs": [
+                    "samples": ["3", 0],
+                    "vae": ["4", 2]
+                ] as [String : Any]
+            ] as [String : Any],
+            // Save frames
+            "9": [
+                "class_type": "SaveImage",
+                "inputs": [
+                    "filename_prefix": "AIStudio_anim",
+                    "images": ["8", 0]
+                ] as [String : Any]
+            ] as [String : Any]
+        ]
+    }
+
     // MARK: - HTTP Helpers
 
     private func get(_ path: String) async throws -> Data {
