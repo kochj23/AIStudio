@@ -9,6 +9,27 @@
 import SwiftUI
 import AVKit
 
+/// Direct NSViewRepresentable wrapper for AVPlayerView.
+/// Avoids _AVKit_SwiftUI framework which crashes on macOS 26.3 when using
+/// the SwiftUI VideoPlayer component (superclass metadata resolution failure).
+private struct AVPlayerViewRepresentable: NSViewRepresentable {
+    let player: AVPlayer
+
+    func makeNSView(context: Context) -> AVPlayerView {
+        let view = AVPlayerView()
+        view.player = player
+        view.controlsStyle = .inline
+        view.showsFullScreenToggleButton = true
+        return view
+    }
+
+    func updateNSView(_ nsView: AVPlayerView, context: Context) {
+        if nsView.player !== player {
+            nsView.player = player
+        }
+    }
+}
+
 struct VideoPreviewView: View {
     let videoURL: URL?
     let isGenerating: Bool
@@ -28,7 +49,7 @@ struct VideoPreviewView: View {
                         .foregroundColor(.secondary)
                 }
             } else if let _ = videoURL, let player {
-                VideoPlayer(player: player)
+                AVPlayerViewRepresentable(player: player)
                     .onAppear {
                         player.play()
                     }
