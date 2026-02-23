@@ -95,7 +95,9 @@ actor SecureLogger {
         let logger = Logger(subsystem: subsystem, category: category)
         let fileName = (file as NSString).lastPathComponent
         let formattedMessage = "[\(fileName):\(line)] \(function) - \(sanitized)"
-        logger.log(level: level.osLogType, "\(formattedMessage)")
+        // Mark as public since we already sanitized sensitive data above.
+        // Without this, macOS unified logging redacts all interpolated strings as <private>.
+        logger.log(level: level.osLogType, "\(formattedMessage, privacy: .public)")
     }
 
     private func sanitize(_ message: String) -> String {
