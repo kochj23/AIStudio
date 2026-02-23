@@ -45,8 +45,25 @@ class MLXVoiceClone:
                 os.unlink(tmp_path)
             raise RuntimeError(f"Cannot resample audio to 24kHz. Install ffmpeg or use a 24kHz WAV file. Error: {e}")
 
+    def _transcribe_reference(self, audio_path):
+        """Transcribe reference audio so f5-tts-mlx can align the voice.
+        Returns the transcription text, or empty string as fallback."""
+        try:
+            import mlx_whisper
+            result = mlx_whisper.transcribe(
+                audio_path,
+                path_or_hf_repo="mlx-community/whisper-base-mlx",
+            )
+            text = result.get("text", "").strip()
+            if text:
+                return text
+        except Exception:
+            pass
+        return ""
+
     def clone(self, text, reference_audio, speed=1.0):
         """Clone a voice from reference audio and generate speech."""
+        import sys
         try:
             from f5_tts_mlx.generate import generate as f5_generate
         except ImportError:
@@ -60,28 +77,40 @@ class MLXVoiceClone:
 
         start = time.time()
 
-        # Resample reference audio to 24kHz (f5-tts-mlx requirement)
-        resampled_ref = None
-        ref_path = reference_audio
+        # Redirect stdout to stderr during all ML operations to prevent print
+        # statements from corrupting the JSON protocol on stdout.
+        old_stdout = sys.stdout
+        sys.stdout = sys.stderr
         try:
-            resampled_ref = self._resample_to_24k(reference_audio)
-            ref_path = resampled_ref
-        except Exception:
-            # If resampling fails, try with original file — f5-tts will error if it can't handle it
-            pass
+            # Resample reference audio to 24kHz (f5-tts-mlx requirement)
+            resampled_ref = None
+            ref_path = reference_audio
+            try:
+                resampled_ref = self._resample_to_24k(reference_audio)
+                ref_path = resampled_ref
+            except Exception:
+                # If resampling fails, try with original file — f5-tts will error if it can't handle it
+                pass
 
-        # Generate to a temp file
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
-            tmp_path = tmp.name
+            # Auto-transcribe reference audio (required by f5-tts-mlx for voice alignment)
+            ref_text = self._transcribe_reference(ref_path)
 
-        try:
+            # Generate to a temp file
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+                tmp_path = tmp.name
+
             f5_generate(
                 generation_text=text,
                 ref_audio_path=ref_path,
+                ref_audio_text=ref_text,
+                estimate_duration=True,
                 speed=speed,
                 output_path=tmp_path,
             )
+        finally:
+            sys.stdout = old_stdout
 
+        try:
             with open(tmp_path, "rb") as f:
                 wav_bytes = f.read()
         finally:

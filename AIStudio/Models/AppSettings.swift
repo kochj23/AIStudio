@@ -150,7 +150,7 @@ class AppSettings: ObservableObject {
 
         let defaultOutput = NSHomeDirectory() + "/Documents/AIStudio/output"
         self.outputDirectory = defaults.string(forKey: Keys.outputDirectory) ?? defaultOutput
-        self.pythonPath = defaults.string(forKey: Keys.pythonPath) ?? "/usr/bin/python3"
+        self.pythonPath = defaults.string(forKey: Keys.pythonPath) ?? "/Volumes/Data/xcode/AIStudio/venv/bin/python3"
 
         self.activeBackendType = defaults.string(forKey: Keys.activeBackendType) ?? "automatic1111"
 
@@ -186,7 +186,7 @@ class AppSettings: ObservableObject {
         comfyUIURL = "http://localhost:8188"
         swarmUIURL = "http://localhost:7801"
         outputDirectory = NSHomeDirectory() + "/Documents/AIStudio/output"
-        pythonPath = "/usr/bin/python3"
+        pythonPath = "/Volumes/Data/xcode/AIStudio/venv/bin/python3"
         activeBackendType = "automatic1111"
         defaultSteps = 20
         defaultCFGScale = 7.0

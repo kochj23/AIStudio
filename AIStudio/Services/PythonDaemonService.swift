@@ -20,6 +20,9 @@ actor PythonDaemonService {
     private let pythonPath: String
     private let scriptPath: String
 
+    /// Buffer for accumulating partial stdout reads across pipe chunks
+    private nonisolated(unsafe) var stdoutBuffer = ""
+
     /// Crash recovery state
     private var crashCount: Int = 0
     private var lastCrashTime: Date?
@@ -28,7 +31,7 @@ actor PythonDaemonService {
     private var lastRequest: (command: String, params: [String: Any])?
 
     init(pythonPath: String? = nil, scriptPath: String? = nil) {
-        self.pythonPath = pythonPath ?? "/usr/bin/python3"
+        self.pythonPath = pythonPath ?? "/Volumes/Data/xcode/AIStudio/venv/bin/python3"
 
         if let scriptPath {
             self.scriptPath = scriptPath
@@ -76,24 +79,29 @@ actor PythonDaemonService {
             }
         }
 
-        // Read stdout responses
+        // Read stdout responses — buffer partial reads so large JSON payloads
+        // (e.g. base64 audio) that span multiple pipe chunks are reassembled correctly.
         stdoutPipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
             let data = handle.availableData
             guard !data.isEmpty else { return }
+            guard let self, let chunk = String(data: data, encoding: .utf8) else { return }
 
-            if let text = String(data: data, encoding: .utf8) {
-                // Each line is a JSON response
-                let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
-                for line in lines {
-                    guard let lineData = line.data(using: .utf8),
-                          let json = try? JSONSerialization.jsonObject(with: lineData) as? [String: Any],
-                          let requestId = json["request_id"] as? String else {
-                        continue
-                    }
+            self.stdoutBuffer.append(chunk)
 
-                    Task {
-                        await self?.handleResponse(requestId: requestId, response: json)
-                    }
+            // Split on newlines — complete lines are before the last component,
+            // any incomplete trailing data stays in the buffer.
+            var parts = self.stdoutBuffer.components(separatedBy: "\n")
+            self.stdoutBuffer = parts.removeLast() // keep incomplete trailing chunk
+
+            for line in parts where !line.isEmpty {
+                guard let lineData = line.data(using: .utf8),
+                      let json = try? JSONSerialization.jsonObject(with: lineData) as? [String: Any],
+                      let requestId = json["request_id"] as? String else {
+                    continue
+                }
+
+                Task {
+                    await self.handleResponse(requestId: requestId, response: json)
                 }
             }
         }
@@ -114,6 +122,7 @@ actor PythonDaemonService {
         process = nil
         stdin = nil
         stdout = nil
+        stdoutBuffer = ""
         isRunning = false
 
         // Cancel all pending requests

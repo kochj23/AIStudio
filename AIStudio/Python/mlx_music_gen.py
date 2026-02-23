@@ -41,24 +41,33 @@ class MLXMusicGen:
 
     def generate(self, prompt, duration=10.0, model_size="small"):
         """Generate music from a text description."""
-        model = self._load_model(model_size)
+        import sys
 
-        sample_rate = 32000
+        # Redirect stdout to stderr during all ML operations to prevent print
+        # statements from corrupting the JSON protocol on stdout.
+        old_stdout = sys.stdout
+        sys.stdout = sys.stderr
+        try:
+            model = self._load_model(model_size)
 
-        if hasattr(model, "generate_music"):
-            # MLX native path
-            audio_array = model.generate_music(prompt, duration=duration)
-            sample_rate = getattr(model, "sample_rate", 32000)
-        else:
-            # Transformers path
-            inputs = self._processor(
-                text=[prompt],
-                padding=True,
-                return_tensors="pt",
-            )
-            max_tokens = int(duration * 50)  # ~50 tokens per second for MusicGen
-            audio_values = model.generate(**inputs, max_new_tokens=max_tokens)
-            audio_array = audio_values[0, 0].cpu().numpy()
+            sample_rate = 32000
+
+            if hasattr(model, "generate_music"):
+                # MLX native path
+                audio_array = model.generate_music(prompt, duration=duration)
+                sample_rate = getattr(model, "sample_rate", 32000)
+            else:
+                # Transformers path
+                inputs = self._processor(
+                    text=[prompt],
+                    padding=True,
+                    return_tensors="pt",
+                )
+                max_tokens = int(duration * 50)  # ~50 tokens per second for MusicGen
+                audio_values = model.generate(**inputs, max_new_tokens=max_tokens)
+                audio_array = audio_values[0, 0].cpu().numpy()
+        finally:
+            sys.stdout = old_stdout
 
         wav_bytes = self._array_to_wav(audio_array, sample_rate)
         b64 = base64.b64encode(wav_bytes).decode("utf-8")

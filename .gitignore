@@ -36,6 +36,12 @@ config.plist
 *.ipa
 *.dmg
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+
 # Temporary files
 *.swp
 *.swo

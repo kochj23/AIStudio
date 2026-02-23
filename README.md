@@ -2,7 +2,7 @@
 
 ![Platform](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-2.3.0-orange)
+![Version](https://img.shields.io/badge/version-2.3.1-orange)
 
 **Local AI media creation studio for macOS, powered by Apple Silicon.**
 
@@ -49,11 +49,13 @@ AI Studio connects to local Stable Diffusion backends (Automatic1111, ComfyUI, S
 - Configurable frame count, FPS, resolution
 
 ### Audio Suite
-- **Text-to-Speech** — 7 MLX engines: Kokoro, CSM, Chatterbox, Dia, Spark, Breeze, Mars5
-- **Voice Cloning** — f5-tts-mlx reference-based voice cloning (drag & drop audio)
+- **Text-to-Speech** — 6 MLX engines via mlx-audio: Kokoro (11 voices), Dia, Chatterbox, Spark, Breeze, OuteTTS — configurable speed
+- **Voice Cloning** — f5-tts-mlx reference-based voice cloning with automatic sample rate conversion (24kHz) and auto-transcription via mlx-whisper
 - **Speech-to-Text** — mlx-whisper transcription (tiny through large-v3 models)
-- **Music Generation** — MusicGen via MLX or transformers fallback
+- **Music Generation** — MusicGen via transformers (text-to-music with configurable duration)
 - Built-in audio player with playback controls
+- Drag & drop audio files for voice cloning reference
+- Supports WAV, MP3, M4A input at any sample rate
 
 ### LLM Chat
 - **5 backends:** Ollama, TinyLLM, TinyChat, OpenWebUI, MLX
@@ -137,10 +139,27 @@ python main.py
 
 ### MLX Native Setup (Optional)
 
+Requires **Python 3.10+** (mlx-audio uses modern type syntax). A dedicated venv is recommended:
+
 ```bash
-pip install -r AIStudio/Python/requirements.txt
-# Installs: mlx, mlx-audio, f5-tts-mlx, mlx-whisper, numpy, Pillow
+# Create a Python venv (3.10+ required, 3.13 recommended)
+python3 -m venv venv
+source venv/bin/activate
+
+# Install core dependencies
+pip install 'mlx-audio[kokoro]' f5-tts-mlx mlx-whisper numpy Pillow
+
+# Voice cloning requires espeak-ng (for phonemizer)
+brew install espeak-ng
+
+# Optional: MusicGen support
+pip install transformers torch
+
+# Optional: MLX image generation
+pip install mflux
 ```
+
+Then set the Python path in AI Studio settings to your venv's `python3` (e.g., `./venv/bin/python3`).
 
 ---
 
@@ -185,7 +204,16 @@ AIStudio/
 
 ## Version History
 
-### v2.3.0 (February 20, 2026) — Current
+### v2.3.1 (February 23, 2026) — Current
+- **Fix:** Python daemon pipe buffering — large responses (>64KB) no longer silently dropped
+- **Fix:** Voice cloning auto-transcribes reference audio via mlx-whisper for proper alignment
+- **Fix:** Voice cloning uses `estimate_duration` for correct output length
+- **Fix:** TTS rewritten for mlx-audio 0.3.x API (Kokoro, Dia, Chatterbox, Spark, Breeze, OuteTTS)
+- **Fix:** stdout isolation for all ML operations prevents JSON protocol corruption
+- **Fix:** Music generation stdout redirect for transformers/MusicGen
+- Python 3.10+ venv support (required for mlx-audio modern type syntax)
+
+### v2.3.0 (February 20, 2026)
 - Generation queue — batch multiple prompts with FIFO processing
 - Prompt history — persistent library with search, favorites, tags
 - Image comparison — side-by-side and slider overlay modes
