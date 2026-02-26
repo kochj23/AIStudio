@@ -1,5 +1,6 @@
 # AI Studio
 
+![Build](https://github.com/kochj23/AIStudio/actions/workflows/build.yml/badge.svg)
 ![Platform](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Version](https://img.shields.io/badge/version-2.3.1-orange)
