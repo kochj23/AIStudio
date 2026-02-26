@@ -6,14 +6,14 @@
 
 **Local AI media creation studio for macOS, powered by Apple Silicon.**
 
-AI Studio connects to local Stable Diffusion backends (Automatic1111, ComfyUI, SwarmUI) and runs MLX-native inference directly on your Mac. Generate images, videos, audio, and more — all locally, no cloud required.
+AI Studio connects to local Stable Diffusion backends (Automatic1111, ComfyUI, SwarmUI) and runs MLX (Machine Learning eXtensions)-native inference directly on your Mac. Generate images, videos, audio, and more — all locally, no cloud required.
 
 ---
 
 ## Features
 
 ### Image Generation
-- **Automatic1111** REST API client — full txt2img and img2img support
+- **Automatic1111** REST (Representational State Transfer) API client — full txt2img and img2img support
 - **ComfyUI** workflow-based generation with WebSocket progress tracking
 - **SwarmUI** session-based image generation
 - **MLX Native** — run Stable Diffusion directly on Apple Silicon via diffusionkit/mflux
@@ -25,7 +25,7 @@ AI Studio connects to local Stable Diffusion backends (Automatic1111, ComfyUI, S
 
 ### Generation Queue
 - **Batch generation** — stack multiple prompts and walk away
-- FIFO processing with pause/resume control
+- FIFO (First In, First Out) processing with pause/resume control
 - Reorder, cancel, and remove items
 - Queue management UI with live status indicators
 - Up to 50 items per queue
@@ -46,20 +46,20 @@ AI Studio connects to local Stable Diffusion backends (Automatic1111, ComfyUI, S
 ### Video Generation
 - **AnimateDiff** via ComfyUI — generate animated sequences from text prompts
 - Frame-to-MP4 combining with AVAssetWriter
-- Configurable frame count, FPS, resolution
+- Configurable frame count, FPS (Frames Per Second), resolution
 
 ### Audio Suite
-- **Text-to-Speech** — 6 MLX engines via mlx-audio: Kokoro (11 voices), Dia, Chatterbox, Spark, Breeze, OuteTTS — configurable speed
+- **TTS (Text-to-Speech)** — 6 MLX engines via mlx-audio: Kokoro (11 voices), Dia, Chatterbox, Spark, Breeze, OuteTTS — configurable speed
 - **Voice Cloning** — f5-tts-mlx reference-based voice cloning with automatic sample rate conversion (24kHz) and auto-transcription via mlx-whisper
-- **Speech-to-Text** — mlx-whisper transcription (tiny through large-v3 models)
+- **STT (Speech-to-Text)** — mlx-whisper transcription (tiny through large-v3 models)
 - **Music Generation** — MusicGen via transformers (text-to-music with configurable duration)
 - Built-in audio player with playback controls
 - Drag & drop audio files for voice cloning reference
 - Supports WAV, MP3, M4A input at any sample rate
 
-### LLM Chat
+### LLM (Large Language Model) Chat
 - **5 backends:** Ollama, TinyLLM, TinyChat, OpenWebUI, MLX
-- **Streaming** for Ollama, TinyLLM, and OpenWebUI (SSE)
+- **Streaming** for Ollama, TinyLLM, and OpenWebUI (SSE, Server-Sent Events)
 - Auto-detection with priority-based fallback
 - Conversation history with system prompt support
 
@@ -165,7 +165,7 @@ Then set the Python path in AI Studio settings to your venv's `python3` (e.g., `
 
 ## Installation
 
-### From DMG
+### From DMG (Disk Image)
 
 Download from [Releases](https://github.com/kochj23/AIStudio/releases), open the DMG, drag to Applications.
 
