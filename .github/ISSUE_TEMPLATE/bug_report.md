@@ -1,32 +1,39 @@
 ---
 name: Bug Report
-about: Report a bug in AI Studio
+about: Report a bug to help us improve
 title: '[Bug] '
 labels: bug
+assignees: kochj23
 ---
 
 ## Description
 A clear description of the bug.
 
 ## Steps to Reproduce
-1.
-2.
-3.
+1. Go to '...'
+2. Click on '...'
+3. See error
 
 ## Expected Behavior
-What should happen.
+What you expected to happen.
 
 ## Actual Behavior
-What actually happens.
+What actually happened.
 
 ## Environment
 - macOS version:
-- Mac model (M1/M2/M3/M4):
 - AI Studio version:
-- Backend (A1111/ComfyUI/SwarmUI):
+- Apple Silicon chip (M1/M2/M3/M4):
+- Backend (Automatic1111/ComfyUI/SwarmUI/MLX):
 - Backend version:
 
+## Screenshots
+If applicable, add screenshots to help explain the problem.
+
+## Additional Context
+Any other context about the problem.
+
 ## Security Assessment
-- [ ] This bug could expose sensitive data
-- [ ] This bug involves network communication
-- [ ] This bug involves file system access
+- [ ] This bug has security implications
+- [ ] This bug exposes sensitive data
+- [ ] This bug affects data integrity
