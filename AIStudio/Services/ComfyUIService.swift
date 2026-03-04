@@ -61,11 +61,23 @@ actor ComfyUIService: ImageBackendProtocol {
            let required = input["required"] as? [String: Any],
            let ckptName = required["ckpt_name"] as? [[Any]],
            let names = ckptName.first as? [String] {
-            return names.map { name in
+            // Only surface SafeTensors checkpoints — silently exclude .ckpt/.bin/.pt (pickle format)
+            let safeNames = names.filter { isSafeTensorsCheckpoint($0) }
+            return safeNames.map { name in
                 A1111Model(title: name, modelName: name, hash: nil, filename: name)
             }
         }
         return []
+    }
+
+    /// Returns true only if the checkpoint filename uses SafeTensors format.
+    private func isSafeTensorsCheckpoint(_ name: String) -> Bool {
+        let lower = name.lowercased()
+        // Accept .safetensors, reject .ckpt/.bin/.pt (PyTorch pickle)
+        if lower.hasSuffix(".safetensors") { return true }
+        if lower.hasSuffix(".ckpt") || lower.hasSuffix(".bin") || lower.hasSuffix(".pt") { return false }
+        // Unknown extension — exclude by default (safe-by-default)
+        return false
     }
 
     func listSamplers() async throws -> [A1111Sampler] {
@@ -85,6 +97,13 @@ actor ComfyUIService: ImageBackendProtocol {
 
     func textToImage(_ request: ImageGenerationRequest) async throws -> ImageGenerationResult {
         let startTime = Date()
+
+        // Reject unsafe model formats before sending to ComfyUI
+        if let checkpoint = request.checkpointName, !checkpoint.isEmpty {
+            guard isSafeTensorsCheckpoint(checkpoint) else {
+                throw BackendError.decodingFailed("Unsafe model format rejected: '\(checkpoint)'. Only .safetensors checkpoints are permitted.")
+            }
+        }
 
         let workflow = buildTxt2ImgWorkflow(request)
         let promptData = try JSONSerialization.data(withJSONObject: [
@@ -706,7 +725,7 @@ actor ComfyUIService: ImageBackendProtocol {
             return first
         }
         throw BackendError.backendSpecific(
-            "No AnimateDiff motion models found. Download a model (e.g. mm_sd_v15_v2.ckpt) to ComfyUI/models/animatediff_models/"
+            "No AnimateDiff motion models found. Download a model (e.g. mm_sd_v15_v2.safetensors) to ComfyUI/models/animatediff_models/"
         )
     }
 

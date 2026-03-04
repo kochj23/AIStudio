@@ -125,6 +125,9 @@ actor SwarmUIService: ImageBackendProtocol {
             "sampler": request.samplerName,
         ]
         if let checkpoint = request.checkpointName, !checkpoint.isEmpty {
+            guard checkpoint.lowercased().hasSuffix(".safetensors") else {
+                throw BackendError.decodingFailed("Unsafe model format rejected: '\(checkpoint)'. Only .safetensors checkpoints are permitted.")
+            }
             body["model"] = checkpoint
         }
 
