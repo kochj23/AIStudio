@@ -3,7 +3,7 @@
 ![Build](https://github.com/kochj23/AIStudio/actions/workflows/build.yml/badge.svg)
 ![Platform](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-2.3.1-orange)
+![Version](https://img.shields.io/badge/version-2.3.2-orange)
 
 **Local AI media creation studio for macOS, powered by Apple Silicon.**
 
@@ -205,7 +205,10 @@ AIStudio/
 
 ## Version History
 
-### v2.3.1 (February 23, 2026) — Current
+### v2.3.2 (March 4, 2026) — Current
+- **Security:** SafeTensors-only model enforcement — `.ckpt`, `.bin`, and `.pt` (PyTorch pickle) checkpoint files are blocked at both the model picker and request level. Only `.safetensors` format is permitted. PyTorch pickle files can execute arbitrary code on load and are a known supply chain attack vector.
+
+### v2.3.1 (February 23, 2026)
 - **Fix:** Python daemon pipe buffering — large responses (>64KB) no longer silently dropped
 - **Fix:** Voice cloning auto-transcribes reference audio via mlx-whisper for proper alignment
 - **Fix:** Voice cloning uses `estimate_duration` for correct output length
