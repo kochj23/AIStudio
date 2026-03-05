@@ -375,7 +375,9 @@ actor ComfyUIService: ImageBackendProtocol {
     }
 
     private func getImage(filename: String, subfolder: String) async throws -> Data {
-        var components = URLComponents(string: "\(baseURL)/view")!
+        guard var components = URLComponents(string: "\(baseURL)/view") else {
+            throw BackendError.invalidURL("Could not construct view URL from base: \(baseURL)")
+        }
         components.queryItems = [
             URLQueryItem(name: "filename", value: filename),
             URLQueryItem(name: "subfolder", value: subfolder),

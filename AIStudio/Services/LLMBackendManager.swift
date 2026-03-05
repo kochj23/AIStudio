@@ -624,7 +624,15 @@ class LLMBackendManager: ObservableObject {
             fullPrompt = "\(system)\n\n\(prompt)"
         }
 
+        // Write the prompt to a temp file outside the continuation to avoid Python string injection.
+        // The continuation closure is non-throwing so all setup must happen here.
+        let promptFile = FileManager.default.temporaryDirectory
+            .appendingPathComponent("mlx_prompt_\(UUID().uuidString).txt")
+        try fullPrompt.write(to: promptFile, atomically: true, encoding: .utf8)
+
         return try await withCheckedThrowingContinuation { continuation in
+            defer { try? FileManager.default.removeItem(at: promptFile) }
+
             let process = Process()
             if FileManager.default.fileExists(atPath: mlxPath) {
                 process.executableURL = URL(fileURLWithPath: mlxPath)
@@ -633,8 +641,10 @@ class LLMBackendManager: ObservableObject {
                 process.executableURL = URL(fileURLWithPath: pythonPath)
                 process.arguments = ["-c", """
                     from mlx_lm import load, generate
+                    with open('\(promptFile.path)', 'r', encoding='utf-8') as f:
+                        prompt = f.read()
                     model, tokenizer = load("mlx-community/Llama-3.2-3B-Instruct-4bit")
-                    response = generate(model, tokenizer, prompt='''\(fullPrompt.replacingOccurrences(of: "'", with: "\\'"))''', max_tokens=\(maxTokens))
+                    response = generate(model, tokenizer, prompt=prompt, max_tokens=\(maxTokens))
                     print(response)
                     """]
             }

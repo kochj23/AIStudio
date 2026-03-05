@@ -206,6 +206,8 @@ AIStudio/
 ## Version History
 
 ### v2.3.2 (March 4, 2026) — Current
+- **Security:** Python prompt injection fix — user prompts are now written to a temp file and read by the Python script rather than embedded as a string literal. Prevents triple-quote injection attacks via `'''` sequences in user input.
+- **Security:** `URLComponents` force unwrap replaced with safe guard/throw in `ComfyUIService.getImage()`.
 - **Security:** SafeTensors-only model enforcement — `.ckpt`, `.bin`, and `.pt` (PyTorch pickle) checkpoint files are blocked at both the model picker and request level. Only `.safetensors` format is permitted. PyTorch pickle files can execute arbitrary code on load and are a known supply chain attack vector.
 
 ### v2.3.1 (February 23, 2026)
