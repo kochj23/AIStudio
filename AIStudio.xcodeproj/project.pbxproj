@@ -108,7 +108,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NovaAPIServer.swift; sourceTree = "<absolute>"; };
+		1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "/Volumes/Data/xcode/AIStudio/AIStudio/NovaAPIServer.swift"; sourceTree = "<absolute>"; };
 		A10000000000000000000001 /* AIStudioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStudioApp.swift; sourceTree = "<group>"; };
 		A10000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A10000000000000000000003 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
