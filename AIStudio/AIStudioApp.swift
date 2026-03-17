@@ -16,6 +16,10 @@ struct AIStudioApp: App {
     @StateObject private var generationQueue = GenerationQueue()
     @StateObject private var promptHistory = PromptHistory.shared
 
+    init() {
+        NovaAPIServer.shared.start()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
