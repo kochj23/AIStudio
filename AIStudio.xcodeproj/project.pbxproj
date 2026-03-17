@@ -32,7 +32,6 @@
 		A100000000000000000017B1 /* ImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017 /* ImageUtils.swift */; };
 		A100000000000000000018B1 /* FileOrganizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* FileOrganizer.swift */; };
 		A10000000000000000001AB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001A /* Assets.xcassets */; };
-		/* Phase 2-5 new files */
 		A100000000000000000020B1 /* ComfyUIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000020 /* ComfyUIService.swift */; };
 		A100000000000000000021B1 /* PythonDaemonService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* PythonDaemonService.swift */; };
 		A100000000000000000022B1 /* MLXImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000022 /* MLXImageService.swift */; };
@@ -54,7 +53,6 @@
 		A100000000000000000032B1 /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000032 /* GalleryView.swift */; };
 		A100000000000000000033B1 /* GalleryGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000033 /* GalleryGridView.swift */; };
 		A100000000000000000034B1 /* MediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000034 /* MediaDetailView.swift */; };
-		/* LLM Chat files */
 		A100000000000000000040B1 /* LLMBackendType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* LLMBackendType.swift */; };
 		A100000000000000000041B1 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000041 /* ChatMessage.swift */; };
 		A100000000000000000042B1 /* LLMBackendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000042 /* LLMBackendManager.swift */; };
@@ -63,7 +61,6 @@
 		A100000000000000000045B1 /* ChatMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000045 /* ChatMessageView.swift */; };
 		A100000000000000000046B1 /* LLMBackendStatusMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000046 /* LLMBackendStatusMenu.swift */; };
 		A100000000000000000047B1 /* LLMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000047 /* LLMSettingsView.swift */; };
-		/* Widget files */
 		A100000000000000000050B1 /* WidgetDataSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000050 /* WidgetDataSync.swift */; };
 		A100000000000000000060B1 /* GenerationQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000060 /* GenerationQueue.swift */; };
 		A100000000000000000061B1 /* GenerationQueueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000061 /* GenerationQueueView.swift */; };
@@ -71,12 +68,7 @@
 		A100000000000000000063B1 /* RetryHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000063 /* RetryHandler.swift */; };
 		A100000000000000000064B1 /* ImageComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000064 /* ImageComparisonView.swift */; };
 		A100000000000000000065B1 /* PromptHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000065 /* PromptHistoryView.swift */; };
-		W1DGET1AIST_APPEXEMB123 /* AIStudio Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		W1DGET1AIST_BLDMAIN1234 /* AIStudioWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCMAIN1234 /* AIStudioWidget.swift */; };
-		W1DGET1AIST_BLDDATA1234 /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */; };
-		W1DGET1AIST_BLDSHRD1234 /* SharedDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCSHRD1234 /* SharedDataManager.swift */; };
-		W1DGET1AIST_BLDASST1234 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001A /* Assets.xcassets */; };
-		/* Python daemon files in Resources */
+		ABB7A45291E10567A991A726 /* NovaAPIServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */; };
 		PY00000000000000000001B1 /* aistudio_daemon.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000001 /* aistudio_daemon.py */; };
 		PY00000000000000000002B1 /* mlx_image_gen.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000002 /* mlx_image_gen.py */; };
 		PY00000000000000000003B1 /* mlx_tts.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000003 /* mlx_tts.py */; };
@@ -84,6 +76,11 @@
 		PY00000000000000000005B1 /* mlx_whisper_stt.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000005 /* mlx_whisper_stt.py */; };
 		PY00000000000000000006B1 /* mlx_music_gen.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000006 /* mlx_music_gen.py */; };
 		PY00000000000000000007B1 /* requirements.txt in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000007 /* requirements.txt */; };
+		W1DGET1AIST_APPEXEMB123 /* AIStudio Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		W1DGET1AIST_BLDASST1234 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001A /* Assets.xcassets */; };
+		W1DGET1AIST_BLDDATA1234 /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */; };
+		W1DGET1AIST_BLDMAIN1234 /* AIStudioWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCMAIN1234 /* AIStudioWidget.swift */; };
+		W1DGET1AIST_BLDSHRD1234 /* SharedDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1DGET1AIST_SRCSHRD1234 /* SharedDataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +108,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NovaAPIServer.swift; sourceTree = "<absolute>"; };
 		A10000000000000000000001 /* AIStudioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStudioApp.swift; sourceTree = "<group>"; };
 		A10000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A10000000000000000000003 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -138,7 +136,6 @@
 		A10000000000000000000019 /* AIStudio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIStudio.entitlements; sourceTree = "<group>"; };
 		A1000000000000000000001A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1000000000000000000001B /* AIStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AIStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		/* Phase 2-5 new files */
 		A10000000000000000000020 /* ComfyUIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComfyUIService.swift; sourceTree = "<group>"; };
 		A10000000000000000000021 /* PythonDaemonService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PythonDaemonService.swift; sourceTree = "<group>"; };
 		A10000000000000000000022 /* MLXImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLXImageService.swift; sourceTree = "<group>"; };
@@ -160,7 +157,6 @@
 		A10000000000000000000032 /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
 		A10000000000000000000033 /* GalleryGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryGridView.swift; sourceTree = "<group>"; };
 		A10000000000000000000034 /* MediaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailView.swift; sourceTree = "<group>"; };
-		/* LLM Chat files */
 		A10000000000000000000040 /* LLMBackendType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBackendType.swift; sourceTree = "<group>"; };
 		A10000000000000000000041 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		A10000000000000000000042 /* LLMBackendManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBackendManager.swift; sourceTree = "<group>"; };
@@ -169,7 +165,6 @@
 		A10000000000000000000045 /* ChatMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageView.swift; sourceTree = "<group>"; };
 		A10000000000000000000046 /* LLMBackendStatusMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBackendStatusMenu.swift; sourceTree = "<group>"; };
 		A10000000000000000000047 /* LLMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsView.swift; sourceTree = "<group>"; };
-		/* Widget files */
 		A10000000000000000000050 /* WidgetDataSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataSync.swift; sourceTree = "<group>"; };
 		A10000000000000000000060 /* GenerationQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationQueue.swift; sourceTree = "<group>"; };
 		A10000000000000000000061 /* GenerationQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationQueueView.swift; sourceTree = "<group>"; };
@@ -177,12 +172,6 @@
 		A10000000000000000000063 /* RetryHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetryHandler.swift; sourceTree = "<group>"; };
 		A10000000000000000000064 /* ImageComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageComparisonView.swift; sourceTree = "<group>"; };
 		A10000000000000000000065 /* PromptHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptHistoryView.swift; sourceTree = "<group>"; };
-		W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "AIStudio Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		W1DGET1AIST_SRCMAIN1234 /* AIStudioWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStudioWidget.swift; sourceTree = "<group>"; };
-		W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetData.swift; sourceTree = "<group>"; };
-		W1DGET1AIST_SRCSHRD1234 /* SharedDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDataManager.swift; sourceTree = "<group>"; };
-		W1DGET1AIST_ENTITLE1234 /* AIStudio_Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIStudio_Widget.entitlements; sourceTree = "<group>"; };
-		/* Python daemon files */
 		PY0000000000000000000001 /* aistudio_daemon.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = aistudio_daemon.py; sourceTree = "<group>"; };
 		PY0000000000000000000002 /* mlx_image_gen.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_image_gen.py; sourceTree = "<group>"; };
 		PY0000000000000000000003 /* mlx_tts.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_tts.py; sourceTree = "<group>"; };
@@ -190,6 +179,11 @@
 		PY0000000000000000000005 /* mlx_whisper_stt.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_whisper_stt.py; sourceTree = "<group>"; };
 		PY0000000000000000000006 /* mlx_music_gen.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_music_gen.py; sourceTree = "<group>"; };
 		PY0000000000000000000007 /* requirements.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = requirements.txt; sourceTree = "<group>"; };
+		W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "AIStudio Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		W1DGET1AIST_ENTITLE1234 /* AIStudio_Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIStudio_Widget.entitlements; sourceTree = "<group>"; };
+		W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetData.swift; sourceTree = "<group>"; };
+		W1DGET1AIST_SRCMAIN1234 /* AIStudioWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStudioWidget.swift; sourceTree = "<group>"; };
+		W1DGET1AIST_SRCSHRD1234 /* SharedDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDataManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -210,7 +204,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C10000000000000000000001 /* Root */ = {
+		C10000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
 				C10000000000000000000002 /* AIStudio */,
@@ -232,6 +226,7 @@
 				PYGRP00000000000000001 /* Python */,
 				A10000000000000000000019 /* AIStudio.entitlements */,
 				A1000000000000000000001A /* Assets.xcassets */,
+				1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */,
 			);
 			path = AIStudio;
 			sourceTree = "<group>";
@@ -375,6 +370,15 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
+		C1000000000000000000000E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000000000000000001B /* AIStudio.app */,
+				W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		C10000000000000000000010 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
@@ -383,26 +387,6 @@
 				A10000000000000000000046 /* LLMBackendStatusMenu.swift */,
 			);
 			path = Chat;
-			sourceTree = "<group>";
-		};
-		W1DGET1AIST_GROUP123456 /* AIStudio Widget */ = {
-			isa = PBXGroup;
-			children = (
-				W1DGET1AIST_SRCMAIN1234 /* AIStudioWidget.swift */,
-				W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */,
-				W1DGET1AIST_SRCSHRD1234 /* SharedDataManager.swift */,
-				W1DGET1AIST_ENTITLE1234 /* AIStudio_Widget.entitlements */,
-			);
-			path = "AIStudio Widget";
-			sourceTree = "<group>";
-		};
-		C1000000000000000000000E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A1000000000000000000001B /* AIStudio.app */,
-				W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		PYGRP00000000000000001 /* Python */ = {
@@ -417,6 +401,17 @@
 				PY0000000000000000000007 /* requirements.txt */,
 			);
 			path = Python;
+			sourceTree = "<group>";
+		};
+		W1DGET1AIST_GROUP123456 /* AIStudio Widget */ = {
+			isa = PBXGroup;
+			children = (
+				W1DGET1AIST_SRCMAIN1234 /* AIStudioWidget.swift */,
+				W1DGET1AIST_SRCDATA1234 /* WidgetData.swift */,
+				W1DGET1AIST_SRCSHRD1234 /* SharedDataManager.swift */,
+				W1DGET1AIST_ENTITLE1234 /* AIStudio_Widget.entitlements */,
+			);
+			path = "AIStudio Widget";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -484,7 +479,7 @@
 				en,
 				Base,
 			);
-			mainGroup = C10000000000000000000001 /* Root */;
+			mainGroup = C10000000000000000000001;
 			productRefGroup = C1000000000000000000000E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -586,6 +581,7 @@
 				A100000000000000000063B1 /* RetryHandler.swift in Sources */,
 				A100000000000000000064B1 /* ImageComparisonView.swift in Sources */,
 				A100000000000000000065B1 /* PromptHistoryView.swift in Sources */,
+				ABB7A45291E10567A991A726 /* NovaAPIServer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -788,7 +784,6 @@
 			};
 			name = Release;
 		};
-		/* Widget build configurations */
 		W1DGET1AIST_DBGCFG12345 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
