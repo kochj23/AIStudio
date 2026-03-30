@@ -8,15 +8,10 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Set up Xcode
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: latest-stable
 
     - name: Build
       run: |
@@ -39,7 +34,3 @@ jobs:
           CODE_SIGNING_ALLOWED=NO \
           SWIFT_TREAT_WARNINGS_AS_ERRORS=NO \
           | tail -20
-
-    - name: Build Status
-      if: always()
-      run: echo "Build completed with status ${{ job.status }}"
