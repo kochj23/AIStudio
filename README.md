@@ -25,6 +25,7 @@ Written by Jordan Koch.
 - [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Project Structure](#project-structure)
 - [Security](#security)
+- [Testing](#testing)
 - [Version History](#version-history)
 - [License](#license)
 
@@ -32,55 +33,88 @@ Written by Jordan Koch.
 
 ## Architecture
 
-```
-+------------------------------------------------------------------+
-|                     AI Studio (SwiftUI macOS)                     |
-|                                                                   |
-|  +------------+  +------------+  +----------+  +------+  +------+ |
-|  |  Images    |  |   Videos   |  |  Audio   |  | Chat |  |Gallery| |
-|  |  Tab       |  |   Tab      |  |  Tab     |  | Tab  |  | Tab  | |
-|  +-----+------+  +-----+------+  +----+-----+  +--+---+  +--+---+ |
-|        |              |              |            |          |     |
-+------------------------------------------------------------------+
-         |              |              |            |          |
-         v              v              v            v          v
-+------------------+  +----------+  +----------+  +----------+  +----------+
-| ImageBackend     |  | ComfyUI  |  | MLXAudio |  | LLMBackend|  | Gallery  |
-| Protocol         |  | Animate  |  | Service  |  | Manager   |  | Service  |
-+--------+---------+  | Diff     |  +----+-----+  +-----+-----+  +----------+
-         |            +----------+       |               |
-         v                               v               v
-+--------+---------+             +-------+------+ +------+------+------+------+
-| Automatic1111    |             | Python       | | Ollama      TinyLLM      |
-| Service (REST)   |             | Daemon       | | (stream)    (stream)     |
-+------------------+             | Service      | +-------------+            |
-| ComfyUI Service  |             | (stdin/JSON) | | TinyChat    OpenWebUI    |
-| (REST+WebSocket  |             +------+-------+ | (REST)      (SSE stream) |
-|  +ControlNet)    |                    |         +-------------+            |
-+------------------+                    v         | MLX (local subprocess)   |
-| SwarmUI Service  |             +------+-------+ +--------------------------+
-| (REST sessions)  |             | aistudio_    |
-+------------------+             | daemon.py    |
-| MLX Image        | <--------> |              |
-| Service (daemon) |            | +----------+ |
-+------------------+            | |mlx_tts   | |
-                                | |mlx_voice | |
-  RetryHandler                  | |mlx_whis. | |
-  (exp. backoff + jitter)       | |mlx_music | |
-  +-- httpBackend preset        | |mlx_image | |
-  +-- pythonDaemon preset       | +----------+ |
-  +-- healthCheck preset        +--------------+
+```mermaid
+graph TB
+    subgraph App["AI Studio (SwiftUI macOS)"]
+        direction LR
+        Images[Images Tab]
+        Videos[Videos Tab]
+        Audio[Audio Tab]
+        Chat[Chat Tab]
+        Gallery[Gallery Tab]
+    end
 
-+------------------------------------------------------------------+
-| NovaAPIServer (port 37425, loopback) -- /api/status, /api/ping   |
-+------------------------------------------------------------------+
-| GenerationQueue (FIFO, 50 items, pause/resume, reorder)          |
-+------------------------------------------------------------------+
-| PromptHistory (persistent, search, tags, favorites, dedup)       |
-+------------------------------------------------------------------+
-| WidgetKit Extension (small/medium/large status widgets)          |
-+------------------------------------------------------------------+
+    subgraph ImageBackends["Image Generation Backends"]
+        A1111[Automatic1111<br/>REST API]
+        ComfyUI[ComfyUI<br/>REST + WebSocket + ControlNet]
+        SwarmUI[SwarmUI<br/>REST Sessions]
+        MLXImg[MLX Image Service<br/>via Python Daemon]
+    end
+
+    subgraph LLMBackends["LLM Chat Backends"]
+        Ollama[Ollama<br/>Streaming]
+        TinyLLM[TinyLLM<br/>SSE Stream]
+        TinyChat[TinyChat<br/>REST]
+        OpenWebUI[OpenWebUI<br/>SSE Stream]
+        MLXLLM[MLX Native<br/>Local Subprocess]
+    end
+
+    subgraph Daemon["Python Daemon (stdin/stdout JSON)"]
+        aistudio_daemon[aistudio_daemon.py]
+        mlx_tts[mlx_tts.py<br/>6 TTS Engines]
+        mlx_voice[mlx_voice_clone.py<br/>f5-tts-mlx]
+        mlx_whisper[mlx_whisper_stt.py]
+        mlx_music[mlx_music_gen.py]
+        mlx_image[mlx_image_gen.py<br/>mflux / diffusionkit]
+    end
+
+    subgraph Services["Core Services"]
+        BackendMgr[BackendManager<br/>Health Checks + Active Selection]
+        LLMBackendMgr[LLMBackendManager<br/>Auto-detect + Priority Fallback]
+        Queue[GenerationQueue<br/>FIFO, 50 items, pause/resume]
+        History[PromptHistory<br/>Persistent, search, tags, favorites]
+        Retry[RetryHandler<br/>Exponential backoff + jitter]
+        NovaAPI[NovaAPIServer<br/>Port 37425, loopback only]
+    end
+
+    subgraph Widget["WidgetKit Extension"]
+        SmallW[Small Widget]
+        MediumW[Medium Widget]
+        LargeW[Large Widget]
+    end
+
+    Images --> BackendMgr
+    Videos --> ComfyUI
+    Audio --> aistudio_daemon
+    Chat --> LLMBackendMgr
+    Gallery --> |File-based index| Gallery
+
+    BackendMgr --> A1111
+    BackendMgr --> ComfyUI
+    BackendMgr --> SwarmUI
+    BackendMgr --> MLXImg
+
+    LLMBackendMgr --> Ollama
+    LLMBackendMgr --> TinyLLM
+    LLMBackendMgr --> TinyChat
+    LLMBackendMgr --> OpenWebUI
+    LLMBackendMgr --> MLXLLM
+
+    MLXImg <--> aistudio_daemon
+    aistudio_daemon --> mlx_tts
+    aistudio_daemon --> mlx_voice
+    aistudio_daemon --> mlx_whisper
+    aistudio_daemon --> mlx_music
+    aistudio_daemon --> mlx_image
+
+    BackendMgr --> Retry
+    Queue --> BackendMgr
+    Images --> History
 ```
+
+**Key design decision:** `ImageBackendProtocol` abstracts all image generation backends behind an actor-based interface. The ViewModel calls `backendManager.activeBackend.textToImage(request)` without knowing which backend is active. Switching backends is a one-line configuration change with no impact on the generation pipeline.
+
+The Python daemon (`aistudio_daemon.py`) communicates with Swift via stdin/stdout JSON-line protocol. Each request carries a UUID `request_id` that is echoed back in the response, allowing concurrent requests. Modules are lazy-loaded on first use to keep startup fast.
 
 **Key design decision:** `ImageBackendProtocol` abstracts all image generation backends behind an actor-based interface. The ViewModel calls `backendManager.activeBackend.textToImage(request)` without knowing which backend is active. Switching backends is a one-line configuration change with no impact on the generation pipeline.
 
@@ -389,7 +423,14 @@ AIStudio/
 │   ├── mlx_voice_clone.py      # Voice cloning (f5-tts-mlx)
 │   ├── mlx_whisper_stt.py      # Speech-to-text (mlx-whisper, tiny through large-v3)
 │   ├── mlx_music_gen.py        # Music generation (MusicGen via transformers)
-│   └── requirements.txt        # Python dependency manifest
+│   ├── requirements.txt        # Python dependency manifest
+│   └── tests/                  # pytest suite (65 tests)
+│       ├── test_daemon.py      # JSON protocol, command dispatch, input safety
+│       ├── test_tts.py         # WAV encoding, engine config, voice listing
+│       ├── test_image_gen.py   # Pipeline init, model listing, caching
+│       ├── test_music_gen.py   # WAV encoding, model caching
+│       ├── test_voice_clone.py # WAV encoding, resampling
+│       └── test_whisper_stt.py # Model caching, dependency checks
 │
 └── Assets.xcassets/            # App icons and image assets
 
@@ -398,6 +439,14 @@ AIStudio Widget/
 ├── SharedDataManager.swift     # App Group shared data access
 ├── WidgetData.swift            # Widget data models
 └── Info.plist                  # Widget extension configuration
+
+AIStudioTests/
+├── SecurityUtilsTests.swift    # Input validation, path traversal, URL/HTML sanitization
+├── ModelTests.swift            # All data model and enum tests (45 tests)
+├── ImageUtilsTests.swift       # Image validation, base64, file size limits
+├── FileOrganizerTests.swift    # Filename generation, date directories, metadata export
+├── RetryHandlerTests.swift     # Exponential backoff, presets, retry logic
+└── SecureLoggerTests.swift     # PII redaction, log levels, sensitive pattern matching
 ```
 
 ---
@@ -438,6 +487,49 @@ AI Studio takes a defense-in-depth approach to security despite running entirely
 
 - App sandbox is disabled (`com.apple.security.app-sandbox = false`) to allow direct file system access for media output, Python subprocess management, and backend communication
 - Distributed via DMG, not the Mac App Store
+
+---
+
+## Testing
+
+AI Studio has comprehensive test coverage across both the Swift macOS app and the Python daemon.
+
+### Swift Tests (XCTest)
+
+Run from Xcode or the command line:
+
+```bash
+xcodebuild test -project AIStudio.xcodeproj -scheme AIStudioTests -configuration Debug
+```
+
+| Suite | Tests | Coverage |
+|-------|-------|----------|
+| SecurityUtilsTests | 19 | Input validation, path traversal prevention, URL scheme filtering, HTML/prompt sanitization, secure random |
+| ModelTests | 45 | BackendType, BackendStatus, BackendConfiguration, LLMBackendType, ChatMessage, MediaItem, GenerationRequest, GenerationMetadata, BackendError, LLMError, PromptEntry, QueuedGeneration, A1111 response models |
+| ImageUtilsTests | 13 | PNG/JPEG magic byte validation, base64 decoding, data URI stripping, file size limits, save operations |
+| FileOrganizerTests | 14 | Date-organized directories, filename sanitization, unique filename generation (images/audio/video), metadata JSON export |
+| RetryHandlerTests | 12 | Exponential backoff, jitter, preset configurations (httpBackend, pythonDaemon, healthCheck), non-retryable error handling, CancellationError bypass |
+| SecureLoggerTests | 18 | Log level ordering, PII redaction patterns (API keys, emails, JWTs, passwords, phone numbers, credit cards), minimum log level filtering |
+
+### Python Tests (pytest)
+
+Run from the project venv:
+
+```bash
+source venv/bin/activate
+PYTHONPATH="" python -m pytest AIStudio/Python/tests/ -v
+```
+
+| Suite | Tests | Coverage |
+|-------|-------|----------|
+| test_daemon | 20 | JSON protocol integrity, request_id echoing, command dispatch, health/cancel commands, input safety (unicode, long strings, nested JSON, null values) |
+| test_tts | 16 | ENGINE_MODELS config, voice listing (Kokoro 11 voices), WAV encoding (RIFF header, sample rate, PCM format, mono channel, 16-bit, normalization) |
+| test_image_gen | 5 | Pipeline initialization, model listing, pipeline caching, dependency checking |
+| test_music_gen | 6 | WAV encoding, model caching, normalization |
+| test_voice_clone | 6 | WAV encoding (24kHz), resampling error handling, dependency checking |
+| test_whisper_stt | 5 | Model caching, standard model sizes, dependency checking |
+
+**Total: 121 Swift + 65 Python = 186 tests**
 
 ---
 

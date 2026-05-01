@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1B127889B5B6FE588AEF8A27 /* RetryHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04773E4E74AE1EB56F9A4EC4 /* RetryHandlerTests.swift */; };
+		24AA0C8A40C3540BB9F24CC6 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79548E52AE5B823B694F144B /* Cocoa.framework */; };
+		3C950A2E6720290C42B8B489 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60890DC5625CB141C5BF1EFE /* ModelTests.swift */; };
+		406936BE42B8F947B01A003C /* SecurityUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E0ED38908F44A960A3645A /* SecurityUtilsTests.swift */; };
+		63EA5D57A991273E860A7E44 /* FileOrganizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9600634B6680A99EA542B857 /* FileOrganizerTests.swift */; };
+		8E3E5A1287C1B3EE9D6147C9 /* SecureLoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD66B4B80B5AEAE0A44F3149 /* SecureLoggerTests.swift */; };
 		A100000000000000000001B1 /* AIStudioApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* AIStudioApp.swift */; };
 		A100000000000000000002B1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* ContentView.swift */; };
 		A100000000000000000003B1 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* AppSettings.swift */; };
@@ -69,6 +75,7 @@
 		A100000000000000000064B1 /* ImageComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000064 /* ImageComparisonView.swift */; };
 		A100000000000000000065B1 /* PromptHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000065 /* PromptHistoryView.swift */; };
 		ABB7A45291E10567A991A726 /* NovaAPIServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */; };
+		BA497FE2EE833C14BDB75EB2 /* ImageUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24EF472452F3A96664DE309 /* ImageUtilsTests.swift */; };
 		PY00000000000000000001B1 /* aistudio_daemon.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000001 /* aistudio_daemon.py */; };
 		PY00000000000000000002B1 /* mlx_image_gen.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000002 /* mlx_image_gen.py */; };
 		PY00000000000000000003B1 /* mlx_tts.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000003 /* mlx_tts.py */; };
@@ -84,6 +91,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		D5B1B98AD95652EE7D4592D0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E10000000000000000000007 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E10000000000000000000008;
+			remoteInfo = AIStudio;
+		};
 		W1DGET1AIST_PROXY123456 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E10000000000000000000007 /* Project object */;
@@ -108,7 +122,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "/Volumes/Data/xcode/AIStudio/AIStudio/NovaAPIServer.swift"; sourceTree = "<absolute>"; };
+		04773E4E74AE1EB56F9A4EC4 /* RetryHandlerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/RetryHandlerTests.swift; sourceTree = SOURCE_ROOT; };
+		1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = /Volumes/Data/xcode/AIStudio/AIStudio/NovaAPIServer.swift; sourceTree = "<absolute>"; };
+		4814E071A841DE299958E1C8 /* AIStudioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AIStudioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		60890DC5625CB141C5BF1EFE /* ModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/ModelTests.swift; sourceTree = SOURCE_ROOT; };
+		79548E52AE5B823B694F144B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		9600634B6680A99EA542B857 /* FileOrganizerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/FileOrganizerTests.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000001 /* AIStudioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStudioApp.swift; sourceTree = "<group>"; };
 		A10000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A10000000000000000000003 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -172,6 +191,10 @@
 		A10000000000000000000063 /* RetryHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetryHandler.swift; sourceTree = "<group>"; };
 		A10000000000000000000064 /* ImageComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageComparisonView.swift; sourceTree = "<group>"; };
 		A10000000000000000000065 /* PromptHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptHistoryView.swift; sourceTree = "<group>"; };
+		AB423CE0443E644F798590F7 /* AIStudioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AIStudioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B24EF472452F3A96664DE309 /* ImageUtilsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/ImageUtilsTests.swift; sourceTree = SOURCE_ROOT; };
+		BD66B4B80B5AEAE0A44F3149 /* SecureLoggerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/SecureLoggerTests.swift; sourceTree = SOURCE_ROOT; };
+		E2E0ED38908F44A960A3645A /* SecurityUtilsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/SecurityUtilsTests.swift; sourceTree = SOURCE_ROOT; };
 		PY0000000000000000000001 /* aistudio_daemon.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = aistudio_daemon.py; sourceTree = "<group>"; };
 		PY0000000000000000000002 /* mlx_image_gen.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_image_gen.py; sourceTree = "<group>"; };
 		PY0000000000000000000003 /* mlx_tts.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_tts.py; sourceTree = "<group>"; };
@@ -187,6 +210,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		9E4B077BFB1AA4886BB6AE20 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				24AA0C8A40C3540BB9F24CC6 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D10000000000000000000003 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -204,12 +235,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1B51E97DAB298A68FCC5871B /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				79548E52AE5B823B694F144B /* Cocoa.framework */,
+			);
+			name = "OS X";
+			sourceTree = "<group>";
+		};
 		C10000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
 				C10000000000000000000002 /* AIStudio */,
 				W1DGET1AIST_GROUP123456 /* AIStudio Widget */,
 				C1000000000000000000000E /* Products */,
+				ECE8A0DC992BFD856C893235 /* Frameworks */,
+				DBDFA31A569CF247BD9EC935 /* AIStudioTests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -375,6 +416,8 @@
 			children = (
 				A1000000000000000000001B /* AIStudio.app */,
 				W1DGET1AIST_APPEX123456 /* AIStudio Widget.appex */,
+				4814E071A841DE299958E1C8 /* AIStudioTests.xctest */,
+				AB423CE0443E644F798590F7 /* AIStudioTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -387,6 +430,28 @@
 				A10000000000000000000046 /* LLMBackendStatusMenu.swift */,
 			);
 			path = Chat;
+			sourceTree = "<group>";
+		};
+		DBDFA31A569CF247BD9EC935 /* AIStudioTests */ = {
+			isa = PBXGroup;
+			children = (
+				9600634B6680A99EA542B857 /* FileOrganizerTests.swift */,
+				B24EF472452F3A96664DE309 /* ImageUtilsTests.swift */,
+				60890DC5625CB141C5BF1EFE /* ModelTests.swift */,
+				04773E4E74AE1EB56F9A4EC4 /* RetryHandlerTests.swift */,
+				BD66B4B80B5AEAE0A44F3149 /* SecureLoggerTests.swift */,
+				E2E0ED38908F44A960A3645A /* SecurityUtilsTests.swift */,
+			);
+			name = AIStudioTests;
+			path = AIStudioTests;
+			sourceTree = "<group>";
+		};
+		ECE8A0DC992BFD856C893235 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1B51E97DAB298A68FCC5871B /* OS X */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		PYGRP00000000000000001 /* Python */ = {
@@ -417,6 +482,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		53C968D4B592D6CE4B28CABA /* AIStudioTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 117607D4F5494F4DD84FCB49 /* Build configuration list for PBXNativeTarget "AIStudioTests" */;
+			buildPhases = (
+				6831918ABD043C2CFECCA825 /* Sources */,
+				9E4B077BFB1AA4886BB6AE20 /* Frameworks */,
+				D3D83C401532DFD309B3818E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8499BAAC3B47331F901617A2 /* PBXTargetDependency */,
+			);
+			name = AIStudioTests;
+			productName = AIStudioTests;
+			productReference = AB423CE0443E644F798590F7 /* AIStudioTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		E10000000000000000000008 /* AIStudio */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E10000000000000000000005 /* Build configuration list for PBXNativeTarget "AIStudio" */;
@@ -486,6 +569,7 @@
 			targets = (
 				E10000000000000000000008 /* AIStudio */,
 				W1DGET1AIST_TARGET12345 /* AIStudio Widget */,
+				53C968D4B592D6CE4B28CABA /* AIStudioTests */,
 			);
 		};
 /* End PBXProject section */
@@ -506,6 +590,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D3D83C401532DFD309B3818E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		W1DGET1AIST_RESPHASE123 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -517,6 +608,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		6831918ABD043C2CFECCA825 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				63EA5D57A991273E860A7E44 /* FileOrganizerTests.swift in Sources */,
+				BA497FE2EE833C14BDB75EB2 /* ImageUtilsTests.swift in Sources */,
+				3C950A2E6720290C42B8B489 /* ModelTests.swift in Sources */,
+				1B127889B5B6FE588AEF8A27 /* RetryHandlerTests.swift in Sources */,
+				8E3E5A1287C1B3EE9D6147C9 /* SecureLoggerTests.swift in Sources */,
+				406936BE42B8F947B01A003C /* SecurityUtilsTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D10000000000000000000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -598,6 +702,12 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		8499BAAC3B47331F901617A2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AIStudio;
+			target = E10000000000000000000008 /* AIStudio */;
+			targetProxy = D5B1B98AD95652EE7D4592D0 /* PBXContainerItemProxy */;
+		};
 		W1DGET1AIST_DEPEND12345 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = W1DGET1AIST_TARGET12345 /* AIStudio Widget */;
@@ -606,6 +716,50 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		A16058EB87B22B533101CE9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio.tests;
+				PRODUCT_MODULE_NAME = AIStudioTests;
+				PRODUCT_NAME = AIStudioTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AIStudio.app/Contents/MacOS/AIStudio";
+			};
+			name = Debug;
+		};
+		CE64B64E32A597DB0F4EF639 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkoch.aistudio.tests;
+				PRODUCT_MODULE_NAME = AIStudioTests;
+				PRODUCT_NAME = AIStudioTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AIStudio.app/Contents/MacOS/AIStudio";
+			};
+			name = Release;
+		};
 		E10000000000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -847,6 +1001,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		117607D4F5494F4DD84FCB49 /* Build configuration list for PBXNativeTarget "AIStudioTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE64B64E32A597DB0F4EF639 /* Release */,
+				A16058EB87B22B533101CE9C /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E10000000000000000000005 /* Build configuration list for PBXNativeTarget "AIStudio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
