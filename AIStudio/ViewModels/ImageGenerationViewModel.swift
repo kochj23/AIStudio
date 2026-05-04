@@ -86,6 +86,13 @@ class ImageGenerationViewModel: ObservableObject {
             async let samplersResult = backendManager.listSamplers()
 
             let (models, samplers) = try await (modelsResult, samplersResult)
+
+            // Re-check backendManager is still alive after await
+            guard self.backendManager != nil else {
+                logWarning("BackendManager deallocated during model/sampler load", category: "ImageGen")
+                return
+            }
+
             self.availableModels = models
             self.availableSamplers = samplers
             // Auto-select first model if none selected
@@ -131,6 +138,16 @@ class ImageGenerationViewModel: ObservableObject {
         generationTask = Task {
             do {
                 let result = try await backend.textToImage(request)
+
+                // Re-check backendManager is still alive after await
+                guard self.backendManager != nil else {
+                    self.errorMessage = "Backend disconnected during generation."
+                    self.statusMessage = "Failed"
+                    self.isGenerating = false
+                    self.progress = 1.0
+                    logWarning("BackendManager deallocated during image generation", category: "ImageGen")
+                    return
+                }
 
                 self.generatedImages = result.images
                 self.lastMetadata = result.metadata
