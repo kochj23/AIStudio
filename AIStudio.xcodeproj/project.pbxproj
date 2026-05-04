@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1B127889B5B6FE588AEF8A27 /* RetryHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04773E4E74AE1EB56F9A4EC4 /* RetryHandlerTests.swift */; };
+		CC000000COMP0001000001B1 /* ComprehensiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000000COMP000100000001 /* ComprehensiveTests.swift */; };
 		24AA0C8A40C3540BB9F24CC6 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79548E52AE5B823B694F144B /* Cocoa.framework */; };
 		3C950A2E6720290C42B8B489 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60890DC5625CB141C5BF1EFE /* ModelTests.swift */; };
 		406936BE42B8F947B01A003C /* SecurityUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E0ED38908F44A960A3645A /* SecurityUtilsTests.swift */; };
@@ -123,6 +124,7 @@
 
 /* Begin PBXFileReference section */
 		04773E4E74AE1EB56F9A4EC4 /* RetryHandlerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/RetryHandlerTests.swift; sourceTree = SOURCE_ROOT; };
+		CC000000COMP000100000001 /* ComprehensiveTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/ComprehensiveTests.swift; sourceTree = SOURCE_ROOT; };
 		1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = /Volumes/Data/xcode/AIStudio/AIStudio/NovaAPIServer.swift; sourceTree = "<absolute>"; };
 		4814E071A841DE299958E1C8 /* AIStudioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AIStudioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		60890DC5625CB141C5BF1EFE /* ModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/ModelTests.swift; sourceTree = SOURCE_ROOT; };
@@ -435,6 +437,7 @@
 		DBDFA31A569CF247BD9EC935 /* AIStudioTests */ = {
 			isa = PBXGroup;
 			children = (
+				CC000000COMP000100000001 /* ComprehensiveTests.swift */,
 				9600634B6680A99EA542B857 /* FileOrganizerTests.swift */,
 				B24EF472452F3A96664DE309 /* ImageUtilsTests.swift */,
 				60890DC5625CB141C5BF1EFE /* ModelTests.swift */,
@@ -612,6 +615,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC000000COMP0001000001B1 /* ComprehensiveTests.swift in Sources */,
 				63EA5D57A991273E860A7E44 /* FileOrganizerTests.swift in Sources */,
 				BA497FE2EE833C14BDB75EB2 /* ImageUtilsTests.swift in Sources */,
 				3C950A2E6720290C42B8B489 /* ModelTests.swift in Sources */,
