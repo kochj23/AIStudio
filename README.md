@@ -120,17 +120,35 @@ Port **37425**, loopback only. `GET /api/status` and `GET /api/ping`.
 
 ## Installation
 
-```bash
-# From DMG (recommended) -- download from Releases
-# Drag AI Studio.app to Applications
+### From DMG (recommended for most users)
 
-# From source
-git clone git@github.com:kochj23/AIStudio.git
-cd AIStudio && open AIStudio.xcodeproj
-# Build and run (Cmd+R) -- Xcode 15+, macOS 14 SDK
-```
+1. Download the latest `.dmg` from [Releases](https://github.com/kochj23/AIStudio/releases).
+2. Open it and drag **AIStudio** into your **Applications** folder.
+3. Launch it from Applications.
+
+> **See "AIStudio can't be opened because the developer cannot be verified"?**
+> That means you have a build that isn't yet Developer-ID-signed **and** notarized. To open it anyway:
+> - **macOS 14 and earlier:** Control-click (right-click) the app → **Open** → **Open**.
+> - **macOS 15 (Sequoia) / 26 and later:** double-click it, dismiss the dialog, then open **System Settings → Privacy & Security**, scroll down, and click **Open Anyway**.
+> - Or from Terminal: `xattr -dr com.apple.quarantine "/Applications/AIStudio.app"`
+>
+> **Notarized releases open with no prompt at all** — maintainers, see [RELEASE.md](RELEASE.md).
 
 Requires macOS 14.0 Sonoma and Apple Silicon. Distributed via DMG only (no Mac App Store). Sandbox disabled for file system access and Python subprocess management.
+
+### From Source
+
+Requires **Xcode 15 or later** (macOS 14 SDK). AIStudio's MLX-native backend runs through an embedded
+**Python runtime** (`mflux` / `mlx-audio` / `mlx-whisper`), **not** the `mlx-swift` Swift package, so the
+Xcode build compiles no Metal shaders and **no Metal Toolchain is required to build**.
+
+```bash
+git clone git@github.com:kochj23/AIStudio.git
+cd AIStudio
+open AIStudio.xcodeproj   # Build & run: Cmd+R
+```
+
+The MLX-native features are optional and configured at runtime — see **MLX Native Setup** below.
 
 ### MLX Native Setup (Optional)
 
