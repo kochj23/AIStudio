@@ -55,6 +55,18 @@ class AppSettings: ObservableObject {
     @Published var chatMaxTokens: Int
     @Published var defaultSystemPrompt: String
 
+    // MARK: - Multi-model load balancing
+
+    /// When on, every discovered local model (Ollama + MLX) joins the balancer pool.
+    @Published var useAllLocalModels: Bool
+    /// When on, OpenRouter's full frontier model list joins the balancer pool
+    /// (requires a stored OpenRouter Keychain key).
+    @Published var enableAllFrontierModels: Bool
+    /// When on, registers Nova Gateway as a balancer backend the app routes to.
+    @Published var useNovaGateway: Bool
+    /// Base URL for the Nova Gateway (OpenAI-compatible).
+    @Published var novaGatewayURL: String
+
     // MARK: - URL Validation
 
     /// Validate that a string is a well-formed http/https URL with a valid host.
@@ -106,6 +118,10 @@ class AppSettings: ObservableObject {
         var chatTemperature: Float
         var chatMaxTokens: Int
         var defaultSystemPrompt: String
+        var useAllLocalModels: Bool
+        var enableAllFrontierModels: Bool
+        var useNovaGateway: Bool
+        var novaGatewayURL: String
     }
 
     /// Persist all settings as a single JSON blob to UserDefaults.
@@ -134,7 +150,11 @@ class AppSettings: ObservableObject {
             selectedOpenRouterModel: selectedOpenRouterModel,
             chatTemperature: chatTemperature,
             chatMaxTokens: chatMaxTokens,
-            defaultSystemPrompt: defaultSystemPrompt
+            defaultSystemPrompt: defaultSystemPrompt,
+            useAllLocalModels: useAllLocalModels,
+            enableAllFrontierModels: enableAllFrontierModels,
+            useNovaGateway: useNovaGateway,
+            novaGatewayURL: novaGatewayURL
         )
 
         if let data = try? JSONEncoder().encode(snapshot) {
@@ -172,6 +192,10 @@ class AppSettings: ObservableObject {
             self.chatTemperature = snapshot.chatTemperature
             self.chatMaxTokens = snapshot.chatMaxTokens
             self.defaultSystemPrompt = snapshot.defaultSystemPrompt
+            self.useAllLocalModels = snapshot.useAllLocalModels
+            self.enableAllFrontierModels = snapshot.enableAllFrontierModels
+            self.useNovaGateway = snapshot.useNovaGateway
+            self.novaGatewayURL = snapshot.novaGatewayURL
         } else {
             // Fall back to legacy per-key defaults for migration
             let defaults = UserDefaults.standard
@@ -201,6 +225,10 @@ class AppSettings: ObservableObject {
             self.chatTemperature = defaults.object(forKey: "chatTemperature") as? Float ?? 0.7
             self.chatMaxTokens = defaults.object(forKey: "chatMaxTokens") as? Int ?? 2048
             self.defaultSystemPrompt = defaults.string(forKey: "defaultSystemPrompt") ?? "You are a helpful creative assistant specializing in art, image generation, and creative writing. Help users craft better prompts, describe images, and explore creative ideas."
+            self.useAllLocalModels = defaults.object(forKey: "useAllLocalModels") as? Bool ?? false
+            self.enableAllFrontierModels = defaults.object(forKey: "enableAllFrontierModels") as? Bool ?? false
+            self.useNovaGateway = defaults.object(forKey: "useNovaGateway") as? Bool ?? false
+            self.novaGatewayURL = defaults.string(forKey: "novaGatewayURL") ?? ModelRegistry.novaGatewayDefaultURL
 
             // Migrate legacy keys to single JSON blob
             save()
@@ -246,6 +274,10 @@ class AppSettings: ObservableObject {
         chatTemperature = 0.7
         chatMaxTokens = 2048
         defaultSystemPrompt = "You are a helpful creative assistant specializing in art, image generation, and creative writing. Help users craft better prompts, describe images, and explore creative ideas."
+        useAllLocalModels = false
+        enableAllFrontierModels = false
+        useNovaGateway = false
+        novaGatewayURL = ModelRegistry.novaGatewayDefaultURL
         save()
     }
 }

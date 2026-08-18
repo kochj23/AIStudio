@@ -115,6 +115,47 @@ struct LLMSettingsView: View {
                 }
             }
 
+            // MARK: Multi-model load balancing
+
+            Section("Multi-model load balancing") {
+                Toggle("Use all local models", isOn: $settings.useAllLocalModels)
+                Text("Spread chat requests across every discovered Ollama + MLX model on this Mac.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Toggle("Enable all frontier models", isOn: $settings.enableAllFrontierModels)
+                    .disabled(!llmManager.hasOpenRouterKey)
+                Text(llmManager.hasOpenRouterKey
+                     ? "Add OpenRouter's full model list to the balancer pool."
+                     : "Add an OpenRouter key above to enable frontier models in the pool.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Toggle("Route through Nova Gateway", isOn: $settings.useNovaGateway)
+                if settings.useNovaGateway {
+                    HStack {
+                        statusDot(for: .novaGateway)
+                        TextField("Nova Gateway URL", text: $settings.novaGatewayURL)
+                            .textFieldStyle(.roundedBorder)
+                        Button("Test") {
+                            Task { await llmManager.refreshBackend(.novaGateway) }
+                        }
+                    }
+                }
+                Text("Nova Gateway is OpenAI-compatible and inherits Nova's own routing (default 127.0.0.1:18792).")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                if !llmManager.discoveredModels.isEmpty {
+                    Text("\(llmManager.discoveredModels.count) model(s) in the balancer pool")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                }
+                Button("Refresh model pool") {
+                    Task { _ = await llmManager.discoverEnabledPool() }
+                }
+            }
+
             // MARK: Chat defaults
 
             Section("Chat Defaults") {

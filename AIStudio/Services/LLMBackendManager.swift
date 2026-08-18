@@ -32,6 +32,24 @@ class LLMBackendManager: ObservableObject {
     /// Keychain-backed store for the OpenRouter API key.
     let openRouterKeychain = KeychainStore()
 
+    // MARK: - Multi-model load balancing
+
+    /// The models currently discovered on this machine (all sources, unfiltered).
+    @Published var discoveredModels: [DiscoveredModel] = []
+
+    /// Pure, network-free balancer that spreads work across the enabled pool.
+    let balancer = LoadBalancer()
+
+    /// Balancer policy (least-busy mirrors how Nova's gateway spreads load).
+    var balancerPolicy: BalancerPolicy = .leastBusy
+
+    /// True when any load-balancing toggle is on, so a chat should be dispatched
+    /// through the balanced path rather than the single-backend path.
+    var isBalancingEnabled: Bool {
+        let s = AppSettings.shared
+        return s.useAllLocalModels || s.enableAllFrontierModels || s.useNovaGateway
+    }
+
     private var cancellables = Set<AnyCancellable>()
     private let session: URLSession
 
@@ -48,6 +66,7 @@ class LLMBackendManager: ObservableObject {
         backends[.openWebUI] = LLMBackendConfiguration(type: .openWebUI, url: settings.openWebUIURL)
         backends[.openRouter] = LLMBackendConfiguration(type: .openRouter, url: settings.openRouterURL)
         backends[.mlx] = LLMBackendConfiguration(type: .mlx)
+        backends[.novaGateway] = LLMBackendConfiguration(type: .novaGateway, url: settings.novaGatewayURL)
 
         if let savedType = LLMBackendType(rawValue: settings.activeLLMBackendType) {
             activeLLMBackendType = savedType
@@ -74,6 +93,10 @@ class LLMBackendManager: ObservableObject {
 
         settings.$openRouterURL.removeDuplicates().sink { [weak self] url in
             self?.backends[.openRouter]?.url = url
+        }.store(in: &cancellables)
+
+        settings.$novaGatewayURL.removeDuplicates().sink { [weak self] url in
+            self?.backends[.novaGateway]?.url = url
         }.store(in: &cancellables)
     }
 
@@ -130,6 +153,10 @@ class LLMBackendManager: ObservableObject {
                 let status = await self?.checkOpenRouter() ?? .disconnected
                 return (.openRouter, status)
             }
+            group.addTask { [weak self] in
+                let status = await self?.checkNovaGateway() ?? .disconnected
+                return (.novaGateway, status)
+            }
 
             for await (type, status) in group {
                 backends[type]?.status = status
@@ -149,6 +176,7 @@ class LLMBackendManager: ObservableObject {
         case .openWebUI: return await checkOpenWebUI().isConnected
         case .openRouter: return await checkOpenRouter().isConnected
         case .mlx: return await checkMLX().isConnected
+        case .novaGateway: return await checkNovaGateway().isConnected
         case .auto: return false
         }
     }
@@ -164,6 +192,7 @@ class LLMBackendManager: ObservableObject {
         case .openWebUI: status = await checkOpenWebUI()
         case .openRouter: status = await checkOpenRouter()
         case .mlx: status = await checkMLX()
+        case .novaGateway: status = await checkNovaGateway()
         case .auto: status = .disconnected
         }
         backends[type]?.status = status
@@ -192,6 +221,8 @@ class LLMBackendManager: ObservableObject {
             resolvedBackend = backends[.openWebUI]?.status.isConnected == true ? .openWebUI : nil
         case .openRouter:
             resolvedBackend = backends[.openRouter]?.status.isConnected == true ? .openRouter : nil
+        case .novaGateway:
+            resolvedBackend = backends[.novaGateway]?.status.isConnected == true ? .novaGateway : nil
         case .auto:
             // Health-checked automatic failover: first backend in the preference
             // chain (Ollama → MLX → OpenRouter) that passes its availability check.
@@ -329,6 +360,21 @@ class LLMBackendManager: ObservableObject {
         }
     }
 
+    private func checkNovaGateway() async -> BackendStatus {
+        let baseURL = backends[.novaGateway]?.url ?? ModelRegistry.novaGatewayDefaultURL
+        // Probe the OpenAI-compatible models listing; fall back to the base URL.
+        let candidates = ["\(baseURL)/v1/models", "\(baseURL)/"].compactMap { URL(string: $0) }
+        for url in candidates {
+            do {
+                let (_, response) = try await session.data(from: url)
+                if (response as? HTTPURLResponse)?.statusCode == 200 { return .connected }
+            } catch {
+                continue
+            }
+        }
+        return .disconnected
+    }
+
     /// Fetch the OpenRouter model list for the picker; falls back to the
     /// hardcoded popular-models list if the fetch fails.
     func fetchOpenRouterModels() async {
@@ -365,6 +411,15 @@ class LLMBackendManager: ObservableObject {
         temperature: Float = 0.7,
         maxTokens: Int = 2048
     ) async throws -> String {
+        // Load-balanced mode: when any balancing toggle is on, spread work across
+        // the healthy enabled pool. Falls back to the failover path when the pool
+        // is empty/unreachable.
+        if isBalancingEnabled {
+            if let result = try await generateBalanced(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens) {
+                return result
+            }
+        }
+
         // Automatic mode: live health-check the preference chain and try each
         // healthy backend in order, falling through on failure.
         if activeLLMBackendType == .auto {
@@ -399,6 +454,8 @@ class LLMBackendManager: ObservableObject {
             return try await generateWithOpenRouter(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
         case .mlx:
             return try await generateWithMLX(prompt: prompt, systemPrompt: systemPrompt, maxTokens: maxTokens)
+        case .novaGateway:
+            return try await generateOpenAICompatible(endpoint: "\(backends[.novaGateway]?.url ?? ModelRegistry.novaGatewayDefaultURL)/v1/chat/completions", model: "nova", headers: [:], prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
         case .auto:
             throw LLMError.noBackendAvailable
         }
@@ -435,6 +492,119 @@ class LLMBackendManager: ObservableObject {
             }
         }
         throw lastError
+    }
+
+    // MARK: - Multi-model load balancing
+
+    /// Discover the enabled balancer pool honoring the three toggles. Resilient:
+    /// any unreachable source contributes zero models.
+    func discoverEnabledPool() async -> [DiscoveredModel] {
+        let settings = AppSettings.shared
+        let ollamaBase = backends[.ollama]?.url ?? ModelRegistry.ollamaBaseURL
+        let novaURL = backends[.novaGateway]?.url ?? settings.novaGatewayURL
+
+        var ollama: [DiscoveredModel] = []
+        var mlx: [DiscoveredModel] = []
+        var frontier: [DiscoveredModel] = []
+
+        if settings.useAllLocalModels {
+            ollama = await ModelRegistry.discoverOllama(baseURL: ollamaBase, session: session)
+            mlx = ModelRegistry.discoverMLX()
+        }
+        if settings.enableAllFrontierModels {
+            // Reuse the already-fetched OpenRouter list (falls back to the popular set).
+            frontier = ModelRegistry.frontierModels(from: openRouterModels)
+        }
+        let nova = settings.useNovaGateway ? ModelRegistry.novaGatewayModel(url: novaURL) : nil
+
+        let pool = ModelRegistry.assemblePool(
+            ollama: ollama,
+            mlx: mlx,
+            frontier: frontier,
+            novaGateway: nova,
+            useAllLocalModels: settings.useAllLocalModels,
+            enableAllFrontierModels: settings.enableAllFrontierModels,
+            useNovaGateway: settings.useNovaGateway
+        )
+        discoveredModels = pool
+        return pool
+    }
+
+    /// Build a `[modelId: Bool]` health map for `pool` by probing each distinct
+    /// backend once (health-gating, composed with `FailoverPlanner` semantics).
+    private func healthMap(for pool: [DiscoveredModel]) async -> [String: Bool] {
+        var backendHealth: [LLMBackendType: Bool] = [:]
+        for backend in Set(pool.map { $0.backend }) {
+            backendHealth[backend] = await checkAvailability(backend)
+        }
+        var map: [String: Bool] = [:]
+        for model in pool {
+            map[model.id] = backendHealth[model.backend] ?? false
+        }
+        return map
+    }
+
+    /// Balanced dispatch: pick a model via the `LoadBalancer` over the healthy
+    /// enabled pool and route it through the existing generic path. Returns nil
+    /// when no pool/healthy model exists so the caller can fall back cleanly.
+    private func generateBalanced(
+        prompt: String,
+        systemPrompt: String?,
+        messages: [ChatMessage],
+        temperature: Float,
+        maxTokens: Int
+    ) async throws -> String? {
+        let pool = await discoverEnabledPool()
+        guard !pool.isEmpty else { return nil }
+
+        let health = await healthMap(for: pool)
+        var remaining = pool
+        var lastError: Error?
+
+        // Try balancer-selected models, falling through on failure.
+        while let choice = balancer.next(pool: remaining, health: health, policy: balancerPolicy) {
+            balancer.checkOut(choice.id)
+            do {
+                let result = try await dispatchBalanced(model: choice, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
+                balancer.checkIn(choice.id)
+                resolvedBackend = choice.backend
+                return result
+            } catch {
+                balancer.checkIn(choice.id)
+                lastError = error
+                remaining.removeAll { $0.id == choice.id }
+                continue
+            }
+        }
+
+        // Nothing healthy in the pool — let the caller fall back to failover.
+        if let lastError = lastError { throw lastError }
+        return nil
+    }
+
+    /// Route a single balancer-selected model through the appropriate backend
+    /// implementation (all OpenAI-compatible backends ride the generic path).
+    private func dispatchBalanced(
+        model: DiscoveredModel,
+        prompt: String,
+        systemPrompt: String?,
+        messages: [ChatMessage],
+        temperature: Float,
+        maxTokens: Int
+    ) async throws -> String {
+        switch model.backend {
+        case .ollama:
+            return try await generateWithOllama(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, model: model.modelName)
+        case .mlx:
+            return try await generateWithMLX(prompt: prompt, systemPrompt: systemPrompt, maxTokens: maxTokens)
+        case .openRouter:
+            guard let key = openRouterAPIKey(), !key.isEmpty else { throw LLMError.noBackendAvailable }
+            return try await generateOpenAICompatible(endpoint: model.endpoint, model: model.modelName, headers: OpenRouterProvider.authHeaders(apiKey: key), prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
+        case .novaGateway:
+            return try await generateOpenAICompatible(endpoint: model.endpoint, model: model.modelName, headers: [:], prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
+        default:
+            return try await generate(on: model.backend, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
+        }
     }
 
     // MARK: - Streaming Generation
@@ -526,7 +696,8 @@ class LLMBackendManager: ObservableObject {
         systemPrompt: String?,
         messages: [ChatMessage],
         temperature: Float,
-        maxTokens: Int
+        maxTokens: Int,
+        model: String? = nil
     ) async throws -> String {
         let baseURL = backends[.ollama]?.url ?? "http://localhost:11434"
         guard let url = URL(string: "\(baseURL)/api/chat") else {
@@ -535,7 +706,7 @@ class LLMBackendManager: ObservableObject {
 
         let apiMessages = buildOllamaMessages(prompt: prompt, systemPrompt: systemPrompt, messages: messages)
         let body: [String: Any] = [
-            "model": selectedOllamaModel,
+            "model": model ?? selectedOllamaModel,
             "messages": apiMessages,
             "stream": false,
             "options": [
@@ -725,6 +896,48 @@ class LLMBackendManager: ObservableObject {
                 struct Message: Codable {
                     let content: String
                 }
+                let message: Message
+            }
+            let choices: [Choice]
+        }
+
+        let apiResponse = try JSONDecoder().decode(OpenAIResponse.self, from: data)
+        return apiResponse.choices.first?.message.content ?? ""
+    }
+
+    /// Non-streaming generation against a full OpenAI-compatible endpoint URL.
+    /// Used by the balanced dispatch path and the Nova Gateway backend.
+    private func generateOpenAICompatible(
+        endpoint: String,
+        model: String,
+        headers: [String: String],
+        prompt: String,
+        systemPrompt: String?,
+        messages: [ChatMessage],
+        temperature: Float,
+        maxTokens: Int
+    ) async throws -> String {
+        let apiMessages = OpenAICompatibleRequest.chatMessages(prompt: prompt, systemPrompt: systemPrompt, history: messages)
+
+        var request = try OpenAICompatibleRequest.build(
+            endpoint: endpoint,
+            model: model,
+            messages: apiMessages,
+            temperature: temperature,
+            maxTokens: maxTokens,
+            stream: false,
+            headers: headers
+        )
+        request.timeoutInterval = 120
+
+        let (data, response) = try await session.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw LLMError.httpError((response as? HTTPURLResponse)?.statusCode ?? 0)
+        }
+
+        struct OpenAIResponse: Codable {
+            struct Choice: Codable {
+                struct Message: Codable { let content: String }
                 let message: Message
             }
             let choices: [Choice]

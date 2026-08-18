@@ -98,7 +98,17 @@ AnimateDiff via ComfyUI with frame-to-MP4 combining (AVAssetWriter). Configurabl
 
 ### LLM Chat
 
-5 backends (Ollama, TinyLLM, TinyChat, OpenWebUI, MLX) with streaming for Ollama, TinyLLM, and OpenWebUI. Auto-detection with priority-based fallback. Conversation history, configurable system prompt, temperature, and max tokens.
+6 backends (Ollama, TinyLLM, TinyChat, OpenWebUI, MLX, OpenRouter frontier models) plus an optional Nova Gateway, with streaming for the OpenAI-compatible backends. Auto-detection with health-checked priority-based failover. Conversation history, configurable system prompt, temperature, and max tokens. OpenRouter keys are stored in the macOS Keychain, never in plain settings.
+
+### Multi-model load balancing
+
+Beyond single-backend failover, AIStudio can spread chat requests across *every* model available to it — the single-user version of how Nova's gateway balances load. A `ModelRegistry` discovers models across backends and a pure, network-free `LoadBalancer` (round-robin or least-busy) picks the next one, health-gated so unhealthy models are skipped and it falls through cleanly. Three toggles in **Settings → LLM** control the pool:
+
+- **Use all local models** — every discovered Ollama + MLX model on this Mac joins the balancer pool.
+- **Enable all frontier models** — OpenRouter's full model list joins the pool (requires a stored OpenRouter key).
+- **Route through Nova Gateway** — registers a "Nova Gateway" backend (OpenAI-compatible, default `127.0.0.1:18792`) that the app routes to, inheriting Nova's own internal routing.
+
+With every toggle off, behavior is unchanged (classic single-backend + failover).
 
 ### Gallery
 
@@ -207,6 +217,7 @@ Set the Python path in Settings to your venv's `python3` binary.
 
 | Version | Date | Highlights |
 |---|---|---|
+| 2.4.0 | Aug 2026 | Multi-model load balancing (ModelRegistry + LoadBalancer), 3 pool toggles, Nova Gateway backend; OpenRouter frontier models + Keychain key + health-checked failover |
 | 2.3.2 | Mar 2026 | Prompt injection fix, SafeTensors enforcement, URLComponents safety |
 | 2.3.1 | Feb 2026 | Daemon pipe buffering fix, voice cloning auto-transcription, TTS rewrite for mlx-audio 0.3.x |
 | 2.3.0 | Feb 2026 | Queue, prompt history, image comparison, ControlNet, LLM streaming, retry/backoff |
