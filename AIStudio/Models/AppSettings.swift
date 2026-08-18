@@ -47,8 +47,10 @@ class AppSettings: ObservableObject {
     @Published var tinyLLMURL: String
     @Published var tinyChatURL: String
     @Published var openWebUIURL: String
+    @Published var openRouterURL: String
     @Published var activeLLMBackendType: String
     @Published var selectedOllamaModel: String
+    @Published var selectedOpenRouterModel: String
     @Published var chatTemperature: Float
     @Published var chatMaxTokens: Int
     @Published var defaultSystemPrompt: String
@@ -97,8 +99,10 @@ class AppSettings: ObservableObject {
         var tinyLLMURL: String
         var tinyChatURL: String
         var openWebUIURL: String
+        var openRouterURL: String
         var activeLLMBackendType: String
         var selectedOllamaModel: String
+        var selectedOpenRouterModel: String
         var chatTemperature: Float
         var chatMaxTokens: Int
         var defaultSystemPrompt: String
@@ -124,8 +128,10 @@ class AppSettings: ObservableObject {
             tinyLLMURL: tinyLLMURL,
             tinyChatURL: tinyChatURL,
             openWebUIURL: openWebUIURL,
+            openRouterURL: openRouterURL,
             activeLLMBackendType: activeLLMBackendType,
             selectedOllamaModel: selectedOllamaModel,
+            selectedOpenRouterModel: selectedOpenRouterModel,
             chatTemperature: chatTemperature,
             chatMaxTokens: chatMaxTokens,
             defaultSystemPrompt: defaultSystemPrompt
@@ -159,8 +165,10 @@ class AppSettings: ObservableObject {
             self.tinyLLMURL = snapshot.tinyLLMURL
             self.tinyChatURL = snapshot.tinyChatURL
             self.openWebUIURL = snapshot.openWebUIURL
+            self.openRouterURL = snapshot.openRouterURL
             self.activeLLMBackendType = snapshot.activeLLMBackendType
             self.selectedOllamaModel = snapshot.selectedOllamaModel
+            self.selectedOpenRouterModel = snapshot.selectedOpenRouterModel
             self.chatTemperature = snapshot.chatTemperature
             self.chatMaxTokens = snapshot.chatMaxTokens
             self.defaultSystemPrompt = snapshot.defaultSystemPrompt
@@ -186,8 +194,10 @@ class AppSettings: ObservableObject {
             self.tinyLLMURL = defaults.string(forKey: "tinyLLMURL") ?? "http://localhost:8000"
             self.tinyChatURL = defaults.string(forKey: "tinyChatURL") ?? "http://localhost:8000"
             self.openWebUIURL = defaults.string(forKey: "openWebUIURL") ?? "http://localhost:8080"
+            self.openRouterURL = defaults.string(forKey: "openRouterURL") ?? OpenRouterProvider.baseURL
             self.activeLLMBackendType = defaults.string(forKey: "activeLLMBackendType") ?? "auto"
             self.selectedOllamaModel = defaults.string(forKey: "selectedOllamaModel") ?? "mistral:latest"
+            self.selectedOpenRouterModel = defaults.string(forKey: "selectedOpenRouterModel") ?? OpenRouterProvider.defaultModel
             self.chatTemperature = defaults.object(forKey: "chatTemperature") as? Float ?? 0.7
             self.chatMaxTokens = defaults.object(forKey: "chatMaxTokens") as? Int ?? 2048
             self.defaultSystemPrompt = defaults.string(forKey: "defaultSystemPrompt") ?? "You are a helpful creative assistant specializing in art, image generation, and creative writing. Help users craft better prompts, describe images, and explore creative ideas."
@@ -229,8 +239,10 @@ class AppSettings: ObservableObject {
         tinyLLMURL = "http://localhost:8000"
         tinyChatURL = "http://localhost:8000"
         openWebUIURL = "http://localhost:8080"
+        openRouterURL = OpenRouterProvider.baseURL
         activeLLMBackendType = "auto"
         selectedOllamaModel = "mistral:latest"
+        selectedOpenRouterModel = OpenRouterProvider.defaultModel
         chatTemperature = 0.7
         chatMaxTokens = 2048
         defaultSystemPrompt = "You are a helpful creative assistant specializing in art, image generation, and creative writing. Help users craft better prompts, describe images, and explore creative ideas."
