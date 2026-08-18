@@ -15,14 +15,24 @@ enum SecurityUtils {
 
     static func validateFilePath(_ path: String) -> Bool {
         guard !path.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return false }
+        // SECURITY: run the length and traversal checks against the RAW input.
+        // The previous implementation resolved symlinks first
+        // (`resolvingSymlinksInPath`) and validated the result, which silently
+        // defeated both checks:
+        //   * `..` sequences are collapsed during resolution, so a traversal
+        //     path like "/tmp/../etc/passwd" normalized to "/etc/passwd" and
+        //     passed the "../" filter.
+        //   * over-length paths are truncated to PATH_MAX (1024) during
+        //     resolution, so a 5000-character path slipped under the 4096 limit.
+        // Also validate the tilde-expanded form so traversal hidden after a
+        // "~" expansion is still caught.
         let expandedPath = (path as NSString).expandingTildeInPath
-        let resolvedPath = (expandedPath as NSString).resolvingSymlinksInPath
+        guard path.utf8.count < 4096, expandedPath.utf8.count < 4096 else { return false }
         let dangerousPatterns = ["../", "..\\", "%2e%2e/", "%2e%2e\\"]
-        let lowercasedPath = resolvedPath.lowercased()
+        let lowercasedPath = (path + "\n" + expandedPath).lowercased()
         for pattern in dangerousPatterns {
             if lowercasedPath.contains(pattern.lowercased()) { return false }
         }
-        guard resolvedPath.utf8.count < 4096 else { return false }
         return true
     }
 
@@ -57,11 +67,21 @@ enum SecurityUtils {
     }
 
     static func sanitizeHTML(_ string: String) -> String {
-        var sanitized = string
-        let replacements: [String: String] = [
-            "&": "&amp;", "<": "&lt;", ">": "&gt;",
-            "\"": "&quot;", "'": "&#x27;", "/": "&#x2F;"
+        // SECURITY: "&" MUST be escaped first, and the order MUST be
+        // deterministic. The previous implementation iterated a
+        // `[String: String]` dictionary whose iteration order is randomized
+        // per process, so "&" was frequently escaped after "<"/">"/etc. That
+        // double-escaped the ampersand each replacement introduced
+        // ("&lt;" -> "&amp;lt;"), producing corrupted, non-deterministic output.
+        let replacements: [(String, String)] = [
+            ("&", "&amp;"),
+            ("<", "&lt;"),
+            (">", "&gt;"),
+            ("\"", "&quot;"),
+            ("'", "&#x27;"),
+            ("/", "&#x2F;")
         ]
+        var sanitized = string
         for (char, entity) in replacements {
             sanitized = sanitized.replacingOccurrences(of: char, with: entity)
         }

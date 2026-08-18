@@ -34,3 +34,25 @@ jobs:
           CODE_SIGNING_ALLOWED=NO \
           SWIFT_TREAT_WARNINGS_AS_ERRORS=NO \
           | tail -20
+
+    - name: Test
+      run: |
+        set -o pipefail
+        XCODEPROJ=$(find . -name "*.xcodeproj" -maxdepth 2 | head -1)
+
+        # Prefer a scheme that actually runs tests (the Tests scheme).
+        TEST_SCHEME=$(xcodebuild -list -project "$XCODEPROJ" 2>/dev/null \
+          | awk '/Schemes:/{found=1; next} found && NF{print}' \
+          | sed 's/^ *//' | grep -i 'Tests' | head -1)
+        if [ -z "$TEST_SCHEME" ]; then
+          TEST_SCHEME=$(basename "$XCODEPROJ" .xcodeproj)
+        fi
+
+        echo "Testing scheme: $TEST_SCHEME"
+        xcodebuild test \
+          -project "$XCODEPROJ" \
+          -scheme "$TEST_SCHEME" \
+          -destination 'platform=macOS' \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO \
+          SWIFT_TREAT_WARNINGS_AS_ERRORS=NO
