@@ -15,6 +15,7 @@ enum LLMBackendType: String, CaseIterable, Codable, Sendable {
     case tinyLLM = "tinyllm"
     case tinyChat = "tinychat"
     case openWebUI = "openwebui"
+    case openRouter = "openrouter"
     case auto = "auto"
 
     var displayName: String {
@@ -24,6 +25,7 @@ enum LLMBackendType: String, CaseIterable, Codable, Sendable {
         case .tinyLLM: return "TinyLLM"
         case .tinyChat: return "TinyChat"
         case .openWebUI: return "OpenWebUI"
+        case .openRouter: return "OpenRouter (Frontier Models)"
         case .auto: return "Auto (Prefer Ollama)"
         }
     }
@@ -35,6 +37,7 @@ enum LLMBackendType: String, CaseIterable, Codable, Sendable {
         case .tinyLLM: return "cube"
         case .tinyChat: return "bubble.left.and.bubble.right.fill"
         case .openWebUI: return "globe"
+        case .openRouter: return "cloud"
         case .auto: return "sparkles"
         }
     }
@@ -46,6 +49,7 @@ enum LLMBackendType: String, CaseIterable, Codable, Sendable {
         case .tinyLLM: return "http://localhost:8000"
         case .tinyChat: return "http://localhost:8000"
         case .openWebUI: return "http://localhost:8080"
+        case .openRouter: return OpenRouterProvider.baseURL
         case .auto: return ""
         }
     }
@@ -57,6 +61,7 @@ enum LLMBackendType: String, CaseIterable, Codable, Sendable {
         case .tinyLLM: return "TinyLLM lightweight server (localhost:8000)"
         case .tinyChat: return "TinyChat by Jason Cox (localhost:8000)"
         case .openWebUI: return "Self-hosted AI platform (localhost:8080)"
+        case .openRouter: return "Frontier cloud models via OpenRouter (bring your own key)"
         case .auto: return "Automatically choose best available backend"
         }
     }

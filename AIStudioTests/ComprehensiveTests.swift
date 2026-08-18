@@ -201,7 +201,7 @@ final class LLMBackendTypeUnitTests: XCTestCase {
 
     // MARK: Test 22
     func testLLMBackendTypeAllCases() {
-        XCTAssertEqual(LLMBackendType.allCases.count, 6)
+        XCTAssertEqual(LLMBackendType.allCases.count, 7)
     }
 
     // MARK: Test 23

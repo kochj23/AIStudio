@@ -22,6 +22,16 @@ class LLMBackendManager: ObservableObject {
     @Published var ollamaModels: [String] = []
     @Published var selectedOllamaModel: String = "mistral:latest"
 
+    // OpenRouter-specific (API key lives in the Keychain, never here / UserDefaults)
+    @Published var openRouterModels: [String] = OpenRouterProvider.fallbackModels
+    @Published var selectedOpenRouterModel: String = OpenRouterProvider.defaultModel
+
+    /// Ordered preference chain used by the "Automatic" failover mode.
+    let failoverChain: [LLMBackendType] = FailoverPlanner.defaultChain
+
+    /// Keychain-backed store for the OpenRouter API key.
+    let openRouterKeychain = KeychainStore()
+
     private var cancellables = Set<AnyCancellable>()
     private let session: URLSession
 
@@ -36,12 +46,14 @@ class LLMBackendManager: ObservableObject {
         backends[.tinyLLM] = LLMBackendConfiguration(type: .tinyLLM, url: settings.tinyLLMURL)
         backends[.tinyChat] = LLMBackendConfiguration(type: .tinyChat, url: settings.tinyChatURL)
         backends[.openWebUI] = LLMBackendConfiguration(type: .openWebUI, url: settings.openWebUIURL)
+        backends[.openRouter] = LLMBackendConfiguration(type: .openRouter, url: settings.openRouterURL)
         backends[.mlx] = LLMBackendConfiguration(type: .mlx)
 
         if let savedType = LLMBackendType(rawValue: settings.activeLLMBackendType) {
             activeLLMBackendType = savedType
         }
         selectedOllamaModel = settings.selectedOllamaModel
+        selectedOpenRouterModel = settings.selectedOpenRouterModel
 
         // Listen for settings changes
         settings.$ollamaURL.removeDuplicates().sink { [weak self] url in
@@ -59,6 +71,32 @@ class LLMBackendManager: ObservableObject {
         settings.$openWebUIURL.removeDuplicates().sink { [weak self] url in
             self?.backends[.openWebUI]?.url = url
         }.store(in: &cancellables)
+
+        settings.$openRouterURL.removeDuplicates().sink { [weak self] url in
+            self?.backends[.openRouter]?.url = url
+        }.store(in: &cancellables)
+    }
+
+    // MARK: - OpenRouter API key (Keychain-backed)
+
+    /// Store the OpenRouter API key in the Keychain (empty string clears it).
+    func setOpenRouterAPIKey(_ key: String) {
+        let trimmed = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            openRouterKeychain.delete()
+        } else {
+            openRouterKeychain.set(trimmed)
+        }
+    }
+
+    /// Read the stored OpenRouter API key, if any.
+    func openRouterAPIKey() -> String? {
+        openRouterKeychain.get()
+    }
+
+    /// True when an OpenRouter key has been configured.
+    var hasOpenRouterKey: Bool {
+        openRouterKeychain.hasValue
     }
 
     // MARK: - Health Checks
@@ -88,6 +126,10 @@ class LLMBackendManager: ObservableObject {
                 let status = await self?.checkMLX() ?? .disconnected
                 return (.mlx, status)
             }
+            group.addTask { [weak self] in
+                let status = await self?.checkOpenRouter() ?? .disconnected
+                return (.openRouter, status)
+            }
 
             for await (type, status) in group {
                 backends[type]?.status = status
@@ -95,6 +137,20 @@ class LLMBackendManager: ObservableObject {
         }
 
         determineActiveBackend()
+    }
+
+    /// Quick availability probe for a single backend, returning a plain Bool.
+    /// Reused by the automatic-failover request path.
+    func checkAvailability(_ type: LLMBackendType) async -> Bool {
+        switch type {
+        case .ollama: return await checkOllama().isConnected
+        case .tinyLLM: return await checkTinyLLM().isConnected
+        case .tinyChat: return await checkTinyChat().isConnected
+        case .openWebUI: return await checkOpenWebUI().isConnected
+        case .openRouter: return await checkOpenRouter().isConnected
+        case .mlx: return await checkMLX().isConnected
+        case .auto: return false
+        }
     }
 
     func refreshBackend(_ type: LLMBackendType) async {
@@ -106,6 +162,7 @@ class LLMBackendManager: ObservableObject {
         case .tinyLLM: status = await checkTinyLLM()
         case .tinyChat: status = await checkTinyChat()
         case .openWebUI: status = await checkOpenWebUI()
+        case .openRouter: status = await checkOpenRouter()
         case .mlx: status = await checkMLX()
         case .auto: status = .disconnected
         }
@@ -133,21 +190,15 @@ class LLMBackendManager: ObservableObject {
             resolvedBackend = backends[.tinyChat]?.status.isConnected == true ? .tinyChat : nil
         case .openWebUI:
             resolvedBackend = backends[.openWebUI]?.status.isConnected == true ? .openWebUI : nil
+        case .openRouter:
+            resolvedBackend = backends[.openRouter]?.status.isConnected == true ? .openRouter : nil
         case .auto:
-            // Priority: Ollama > TinyChat > TinyLLM > OpenWebUI > MLX
-            if backends[.ollama]?.status.isConnected == true {
-                resolvedBackend = .ollama
-            } else if backends[.tinyChat]?.status.isConnected == true {
-                resolvedBackend = .tinyChat
-            } else if backends[.tinyLLM]?.status.isConnected == true {
-                resolvedBackend = .tinyLLM
-            } else if backends[.openWebUI]?.status.isConnected == true {
-                resolvedBackend = .openWebUI
-            } else if backends[.mlx]?.status.isConnected == true {
-                resolvedBackend = .mlx
-            } else {
-                resolvedBackend = nil
-            }
+            // Health-checked automatic failover: first backend in the preference
+            // chain (Ollama → MLX → OpenRouter) that passes its availability check.
+            let availability = Dictionary(uniqueKeysWithValues: failoverChain.map {
+                ($0, backends[$0]?.status.isConnected == true)
+            })
+            resolvedBackend = FailoverPlanner.firstHealthy(chain: failoverChain, availability: availability)
         }
     }
 
@@ -249,6 +300,62 @@ class LLMBackendManager: ObservableObject {
         }
     }
 
+    private func checkOpenRouter() async -> BackendStatus {
+        // Availability requires a configured key; verify it with a lightweight
+        // models fetch (also refreshes the model picker on success).
+        guard let key = openRouterAPIKey(), !key.isEmpty else { return .disconnected }
+        guard let url = URL(string: OpenRouterProvider.modelsURL) else { return .disconnected }
+
+        var request = URLRequest(url: url)
+        for (header, value) in OpenRouterProvider.authHeaders(apiKey: key) {
+            request.setValue(value, forHTTPHeaderField: header)
+        }
+
+        do {
+            let (data, response) = try await session.data(for: request)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { return .disconnected }
+            let models = OpenRouterProvider.parseModels(data)
+            if !models.isEmpty {
+                openRouterModels = models
+                if !models.contains(selectedOpenRouterModel) {
+                    selectedOpenRouterModel = models.contains(OpenRouterProvider.defaultModel)
+                        ? OpenRouterProvider.defaultModel : models[0]
+                    AppSettings.shared.selectedOpenRouterModel = selectedOpenRouterModel
+                }
+            }
+            return .connected
+        } catch {
+            return .disconnected
+        }
+    }
+
+    /// Fetch the OpenRouter model list for the picker; falls back to the
+    /// hardcoded popular-models list if the fetch fails.
+    func fetchOpenRouterModels() async {
+        guard let key = openRouterAPIKey(), !key.isEmpty,
+              let url = URL(string: OpenRouterProvider.modelsURL) else {
+            openRouterModels = OpenRouterProvider.fallbackModels
+            return
+        }
+
+        var request = URLRequest(url: url)
+        for (header, value) in OpenRouterProvider.authHeaders(apiKey: key) {
+            request.setValue(value, forHTTPHeaderField: header)
+        }
+
+        do {
+            let (data, response) = try await session.data(for: request)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+                openRouterModels = OpenRouterProvider.fallbackModels
+                return
+            }
+            let models = OpenRouterProvider.parseModels(data)
+            openRouterModels = models.isEmpty ? OpenRouterProvider.fallbackModels : models
+        } catch {
+            openRouterModels = OpenRouterProvider.fallbackModels
+        }
+    }
+
     // MARK: - Text Generation (Non-Streaming)
 
     func generate(
@@ -258,24 +365,76 @@ class LLMBackendManager: ObservableObject {
         temperature: Float = 0.7,
         maxTokens: Int = 2048
     ) async throws -> String {
+        // Automatic mode: live health-check the preference chain and try each
+        // healthy backend in order, falling through on failure.
+        if activeLLMBackendType == .auto {
+            return try await generateWithFailover(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
+        }
+
         guard let backend = resolvedBackend else {
             throw LLMError.noBackendAvailable
         }
+        return try await generate(on: backend, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
+    }
 
+    /// Dispatch a non-streaming generation to a specific backend.
+    private func generate(
+        on backend: LLMBackendType,
+        prompt: String,
+        systemPrompt: String?,
+        messages: [ChatMessage],
+        temperature: Float,
+        maxTokens: Int
+    ) async throws -> String {
         switch backend {
         case .ollama:
             return try await generateWithOllama(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
         case .tinyLLM:
-            return try await generateWithOpenAICompatible(baseURL: backends[.tinyLLM]?.url ?? "http://localhost:8000", prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
+            return try await generateWithOpenAICompatible(baseURL: backends[.tinyLLM]?.url ?? "http://localhost:8000", model: selectedOllamaModel, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
         case .tinyChat:
             return try await generateWithTinyChat(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature)
         case .openWebUI:
-            return try await generateWithOpenAICompatible(baseURL: backends[.openWebUI]?.url ?? "http://localhost:8080", prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
+            return try await generateWithOpenAICompatible(baseURL: backends[.openWebUI]?.url ?? "http://localhost:8080", model: selectedOllamaModel, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
+        case .openRouter:
+            return try await generateWithOpenRouter(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
         case .mlx:
             return try await generateWithMLX(prompt: prompt, systemPrompt: systemPrompt, maxTokens: maxTokens)
         case .auto:
             throw LLMError.noBackendAvailable
         }
+    }
+
+    /// Automatic failover: probe the preference chain, then try each healthy
+    /// backend in order. If a request fails mid-flight, fall through to the next
+    /// healthy backend and retry.
+    private func generateWithFailover(
+        prompt: String,
+        systemPrompt: String?,
+        messages: [ChatMessage],
+        temperature: Float,
+        maxTokens: Int
+    ) async throws -> String {
+        var availability: [LLMBackendType: Bool] = [:]
+        for backend in failoverChain {
+            availability[backend] = await checkAvailability(backend)
+        }
+        let healthy = FailoverPlanner.orderedHealthy(chain: failoverChain, availability: availability)
+
+        guard !healthy.isEmpty else { throw LLMError.noBackendAvailable }
+
+        var lastError: Error = LLMError.noBackendAvailable
+        for backend in healthy {
+            do {
+                let result = try await generate(on: backend, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
+                resolvedBackend = backend
+                return result
+            } catch {
+                lastError = error
+                // Fall through to the next healthy backend and retry.
+                continue
+            }
+        }
+        throw lastError
     }
 
     // MARK: - Streaming Generation
@@ -289,31 +448,74 @@ class LLMBackendManager: ObservableObject {
     ) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
             Task {
-                guard let backend = resolvedBackend else {
+                // Automatic mode: probe the chain, then stream the first healthy
+                // backend, falling through to the next on failure.
+                if self.activeLLMBackendType == .auto {
+                    var availability: [LLMBackendType: Bool] = [:]
+                    for backend in self.failoverChain {
+                        availability[backend] = await self.checkAvailability(backend)
+                    }
+                    let healthy = FailoverPlanner.orderedHealthy(chain: self.failoverChain, availability: availability)
+                    guard !healthy.isEmpty else {
+                        continuation.finish(throwing: LLMError.noBackendAvailable)
+                        return
+                    }
+                    var lastError: Error = LLMError.noBackendAvailable
+                    for backend in healthy {
+                        do {
+                            try await self.streamOn(backend: backend, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
+                            self.resolvedBackend = backend
+                            return
+                        } catch {
+                            lastError = error
+                            continue
+                        }
+                    }
+                    continuation.finish(throwing: lastError)
+                    return
+                }
+
+                guard let backend = self.resolvedBackend else {
                     continuation.finish(throwing: LLMError.noBackendAvailable)
                     return
                 }
 
                 do {
-                    switch backend {
-                    case .ollama:
-                        try await streamOllama(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
-                    case .tinyLLM:
-                        let tinyLLMURL = self.backends[.tinyLLM]?.url ?? "http://localhost:8000"
-                        try await self.streamOpenAICompatible(baseURL: tinyLLMURL, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
-                    case .openWebUI:
-                        let openWebUIURL = self.backends[.openWebUI]?.url ?? "http://localhost:8080"
-                        try await self.streamOpenAICompatible(baseURL: openWebUIURL, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
-                    default:
-                        // Non-streaming fallback for TinyChat and MLX
-                        let result = try await generate(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
-                        continuation.yield(result)
-                        continuation.finish()
-                    }
+                    try await self.streamOn(backend: backend, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
                 } catch {
                     continuation.finish(throwing: error)
                 }
             }
+        }
+    }
+
+    /// Stream from a specific backend into `continuation`. Finishes the
+    /// continuation on success; throws (without finishing) on failure so the
+    /// failover loop can retry the next backend.
+    private func streamOn(
+        backend: LLMBackendType,
+        prompt: String,
+        systemPrompt: String?,
+        messages: [ChatMessage],
+        temperature: Float,
+        maxTokens: Int,
+        continuation: AsyncThrowingStream<String, Error>.Continuation
+    ) async throws {
+        switch backend {
+        case .ollama:
+            try await streamOllama(prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
+        case .tinyLLM:
+            try await streamOpenAICompatible(endpoint: "\(backends[.tinyLLM]?.url ?? "http://localhost:8000")/v1/chat/completions", model: selectedOllamaModel, headers: [:], prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
+        case .openWebUI:
+            try await streamOpenAICompatible(endpoint: "\(backends[.openWebUI]?.url ?? "http://localhost:8080")/v1/chat/completions", model: selectedOllamaModel, headers: [:], prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
+        case .openRouter:
+            guard let key = openRouterAPIKey(), !key.isEmpty else { throw LLMError.noBackendAvailable }
+            try await streamOpenAICompatible(endpoint: OpenRouterProvider.chatCompletionsURL, model: selectedOpenRouterModel, headers: OpenRouterProvider.authHeaders(apiKey: key), prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens, continuation: continuation)
+        default:
+            // Non-streaming fallback for TinyChat and MLX
+            let result = try await generate(on: backend, prompt: prompt, systemPrompt: systemPrompt, messages: messages, temperature: temperature, maxTokens: maxTokens)
+            continuation.yield(result)
+            continuation.finish()
         }
     }
 
@@ -419,7 +621,9 @@ class LLMBackendManager: ObservableObject {
     // MARK: - OpenAI-Compatible Streaming (TinyLLM, OpenWebUI)
 
     private func streamOpenAICompatible(
-        baseURL: String,
+        endpoint: String,
+        model: String,
+        headers: [String: String],
         prompt: String,
         systemPrompt: String?,
         messages: [ChatMessage],
@@ -427,33 +631,17 @@ class LLMBackendManager: ObservableObject {
         maxTokens: Int,
         continuation: AsyncThrowingStream<String, Error>.Continuation
     ) async throws {
-        guard let url = URL(string: "\(baseURL)/v1/chat/completions") else {
-            throw LLMError.invalidURL
-        }
+        let apiMessages = OpenAICompatibleRequest.chatMessages(prompt: prompt, systemPrompt: systemPrompt, history: messages)
 
-        var apiMessages: [[String: String]] = []
-        if let system = systemPrompt, !system.isEmpty {
-            apiMessages.append(["role": "system", "content": system])
-        }
-        for msg in messages where msg.role != .system {
-            apiMessages.append(["role": msg.role.rawValue, "content": msg.content])
-        }
-        if messages.last?.role != .user || messages.last?.content != prompt {
-            apiMessages.append(["role": "user", "content": prompt])
-        }
-
-        let body: [String: Any] = [
-            "model": selectedOllamaModel,
-            "messages": apiMessages,
-            "temperature": temperature,
-            "max_tokens": maxTokens,
-            "stream": true
-        ]
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        var request = try OpenAICompatibleRequest.build(
+            endpoint: endpoint,
+            model: model,
+            messages: apiMessages,
+            temperature: temperature,
+            maxTokens: maxTokens,
+            stream: true,
+            headers: headers
+        )
         request.timeoutInterval = 300
 
         let (bytes, response) = try await session.bytes(for: request)
@@ -506,39 +694,69 @@ class LLMBackendManager: ObservableObject {
 
     private func generateWithOpenAICompatible(
         baseURL: String,
+        model: String,
+        prompt: String,
+        systemPrompt: String?,
+        messages: [ChatMessage],
+        temperature: Float,
+        maxTokens: Int,
+        headers: [String: String] = [:]
+    ) async throws -> String {
+        let apiMessages = OpenAICompatibleRequest.chatMessages(prompt: prompt, systemPrompt: systemPrompt, history: messages)
+
+        var request = try OpenAICompatibleRequest.build(
+            endpoint: "\(baseURL)/v1/chat/completions",
+            model: model,
+            messages: apiMessages,
+            temperature: temperature,
+            maxTokens: maxTokens,
+            stream: false,
+            headers: headers
+        )
+        request.timeoutInterval = 120
+
+        let (data, response) = try await session.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw LLMError.httpError((response as? HTTPURLResponse)?.statusCode ?? 0)
+        }
+
+        struct OpenAIResponse: Codable {
+            struct Choice: Codable {
+                struct Message: Codable {
+                    let content: String
+                }
+                let message: Message
+            }
+            let choices: [Choice]
+        }
+
+        let apiResponse = try JSONDecoder().decode(OpenAIResponse.self, from: data)
+        return apiResponse.choices.first?.message.content ?? ""
+    }
+
+    // MARK: - OpenRouter Implementation (frontier models)
+
+    private func generateWithOpenRouter(
         prompt: String,
         systemPrompt: String?,
         messages: [ChatMessage],
         temperature: Float,
         maxTokens: Int
     ) async throws -> String {
-        guard let url = URL(string: "\(baseURL)/v1/chat/completions") else {
-            throw LLMError.invalidURL
+        guard let key = openRouterAPIKey(), !key.isEmpty else {
+            throw LLMError.noBackendAvailable
         }
+        let apiMessages = OpenAICompatibleRequest.chatMessages(prompt: prompt, systemPrompt: systemPrompt, history: messages)
 
-        var apiMessages: [[String: String]] = []
-        if let system = systemPrompt, !system.isEmpty {
-            apiMessages.append(["role": "system", "content": system])
-        }
-        for msg in messages where msg.role != .system {
-            apiMessages.append(["role": msg.role.rawValue, "content": msg.content])
-        }
-        if messages.last?.role != .user || messages.last?.content != prompt {
-            apiMessages.append(["role": "user", "content": prompt])
-        }
-
-        let body: [String: Any] = [
-            "model": selectedOllamaModel,
-            "messages": apiMessages,
-            "temperature": temperature,
-            "max_tokens": maxTokens,
-            "stream": false
-        ]
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        var request = try OpenAICompatibleRequest.build(
+            endpoint: OpenRouterProvider.chatCompletionsURL,
+            model: selectedOpenRouterModel,
+            messages: apiMessages,
+            temperature: temperature,
+            maxTokens: maxTokens,
+            stream: false,
+            headers: OpenRouterProvider.authHeaders(apiKey: key)
+        )
         request.timeoutInterval = 120
 
         let (data, response) = try await session.data(for: request)
