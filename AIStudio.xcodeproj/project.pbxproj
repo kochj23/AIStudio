@@ -13,6 +13,8 @@
 		3C950A2E6720290C42B8B489 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60890DC5625CB141C5BF1EFE /* ModelTests.swift */; };
 		406936BE42B8F947B01A003C /* SecurityUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E0ED38908F44A960A3645A /* SecurityUtilsTests.swift */; };
 		5DE1EA7F15BFC01B8296F26E /* OpenRouterProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0E8F21B9104FD7E3492B2BC /* OpenRouterProvider.swift */; };
+		F00DF00DF00DF00DF00D0001 /* ModelRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00DF00DF00DF00DF00D0002 /* ModelRegistry.swift */; };
+		F00DF00DF00DF00DF00D0003 /* LoadBalancerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00DF00DF00DF00DF00D0004 /* LoadBalancerTests.swift */; };
 		63EA5D57A991273E860A7E44 /* FileOrganizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9600634B6680A99EA542B857 /* FileOrganizerTests.swift */; };
 		73B1688AF99612323CD74920 /* OpenRouterFailoverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D1A0F1FCA4BC2B2D292284 /* OpenRouterFailoverTests.swift */; };
 		8E3E5A1287C1B3EE9D6147C9 /* SecureLoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD66B4B80B5AEAE0A44F3149 /* SecureLoggerTests.swift */; };
@@ -200,6 +202,8 @@
 		A10000000000000000000065 /* PromptHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptHistoryView.swift; sourceTree = "<group>"; };
 		AB423CE0443E644F798590F7 /* AIStudioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AIStudioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0E8F21B9104FD7E3492B2BC /* OpenRouterProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OpenRouterProvider.swift; path = AIStudio/Services/OpenRouterProvider.swift; sourceTree = "<group>"; };
+		F00DF00DF00DF00DF00D0002 /* ModelRegistry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ModelRegistry.swift; path = AIStudio/Services/ModelRegistry.swift; sourceTree = "<group>"; };
+		F00DF00DF00DF00DF00D0004 /* LoadBalancerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LoadBalancerTests.swift; path = AIStudioTests/LoadBalancerTests.swift; sourceTree = "<group>"; };
 		B24EF472452F3A96664DE309 /* ImageUtilsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/ImageUtilsTests.swift; sourceTree = SOURCE_ROOT; };
 		BD66B4B80B5AEAE0A44F3149 /* SecureLoggerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/SecureLoggerTests.swift; sourceTree = SOURCE_ROOT; };
 		CC000000COMP000100000001 /* ComprehensiveTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/ComprehensiveTests.swift; sourceTree = SOURCE_ROOT; };
@@ -264,6 +268,8 @@
 				9C9A5FD65203FDD9DB783FEC /* KeychainStore.swift */,
 				B0E8F21B9104FD7E3492B2BC /* OpenRouterProvider.swift */,
 				F3D1A0F1FCA4BC2B2D292284 /* OpenRouterFailoverTests.swift */,
+				F00DF00DF00DF00DF00D0002 /* ModelRegistry.swift */,
+				F00DF00DF00DF00DF00D0004 /* LoadBalancerTests.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -636,6 +642,7 @@
 				406936BE42B8F947B01A003C /* SecurityUtilsTests.swift in Sources */,
 				B5D5443EA992255537715997 /* HighValueCoverageTests.swift in Sources */,
 				73B1688AF99612323CD74920 /* OpenRouterFailoverTests.swift in Sources */,
+				F00DF00DF00DF00DF00D0003 /* LoadBalancerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -706,6 +713,7 @@
 				ABB7A45291E10567A991A726 /* NovaAPIServer.swift in Sources */,
 				22FCF381464DBCFC1058CF76 /* KeychainStore.swift in Sources */,
 				5DE1EA7F15BFC01B8296F26E /* OpenRouterProvider.swift in Sources */,
+				F00DF00DF00DF00DF00D0001 /* ModelRegistry.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

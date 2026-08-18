@@ -16,6 +16,7 @@ enum LLMBackendType: String, CaseIterable, Codable, Sendable {
     case tinyChat = "tinychat"
     case openWebUI = "openwebui"
     case openRouter = "openrouter"
+    case novaGateway = "novagateway"
     case auto = "auto"
 
     var displayName: String {
@@ -26,6 +27,7 @@ enum LLMBackendType: String, CaseIterable, Codable, Sendable {
         case .tinyChat: return "TinyChat"
         case .openWebUI: return "OpenWebUI"
         case .openRouter: return "OpenRouter (Frontier Models)"
+        case .novaGateway: return "Nova Gateway"
         case .auto: return "Auto (Prefer Ollama)"
         }
     }
@@ -38,6 +40,7 @@ enum LLMBackendType: String, CaseIterable, Codable, Sendable {
         case .tinyChat: return "bubble.left.and.bubble.right.fill"
         case .openWebUI: return "globe"
         case .openRouter: return "cloud"
+        case .novaGateway: return "sparkle.magnifyingglass"
         case .auto: return "sparkles"
         }
     }
@@ -50,6 +53,7 @@ enum LLMBackendType: String, CaseIterable, Codable, Sendable {
         case .tinyChat: return "http://localhost:8000"
         case .openWebUI: return "http://localhost:8080"
         case .openRouter: return OpenRouterProvider.baseURL
+        case .novaGateway: return ModelRegistry.novaGatewayDefaultURL
         case .auto: return ""
         }
     }
@@ -62,6 +66,7 @@ enum LLMBackendType: String, CaseIterable, Codable, Sendable {
         case .tinyChat: return "TinyChat by Jason Cox (localhost:8000)"
         case .openWebUI: return "Self-hosted AI platform (localhost:8080)"
         case .openRouter: return "Frontier cloud models via OpenRouter (bring your own key)"
+        case .novaGateway: return "Nova's gateway — OpenAI-compatible, inherits Nova's own routing (127.0.0.1:18792)"
         case .auto: return "Automatically choose best available backend"
         }
     }
