@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1B127889B5B6FE588AEF8A27 /* RetryHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04773E4E74AE1EB56F9A4EC4 /* RetryHandlerTests.swift */; };
-		CC000000COMP0001000001B1 /* ComprehensiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000000COMP000100000001 /* ComprehensiveTests.swift */; };
 		24AA0C8A40C3540BB9F24CC6 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79548E52AE5B823B694F144B /* Cocoa.framework */; };
 		3C950A2E6720290C42B8B489 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60890DC5625CB141C5BF1EFE /* ModelTests.swift */; };
 		406936BE42B8F947B01A003C /* SecurityUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E0ED38908F44A960A3645A /* SecurityUtilsTests.swift */; };
@@ -76,7 +75,9 @@
 		A100000000000000000064B1 /* ImageComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000064 /* ImageComparisonView.swift */; };
 		A100000000000000000065B1 /* PromptHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000065 /* PromptHistoryView.swift */; };
 		ABB7A45291E10567A991A726 /* NovaAPIServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */; };
+		B5D5443EA992255537715997 /* HighValueCoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 715ED8A71D15D7EAAB387C33 /* HighValueCoverageTests.swift */; };
 		BA497FE2EE833C14BDB75EB2 /* ImageUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24EF472452F3A96664DE309 /* ImageUtilsTests.swift */; };
+		CC000000COMP0001000001B1 /* ComprehensiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000000COMP000100000001 /* ComprehensiveTests.swift */; };
 		PY00000000000000000001B1 /* aistudio_daemon.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000001 /* aistudio_daemon.py */; };
 		PY00000000000000000002B1 /* mlx_image_gen.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000002 /* mlx_image_gen.py */; };
 		PY00000000000000000003B1 /* mlx_tts.py in Resources */ = {isa = PBXBuildFile; fileRef = PY0000000000000000000003 /* mlx_tts.py */; };
@@ -124,10 +125,10 @@
 
 /* Begin PBXFileReference section */
 		04773E4E74AE1EB56F9A4EC4 /* RetryHandlerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/RetryHandlerTests.swift; sourceTree = SOURCE_ROOT; };
-		CC000000COMP000100000001 /* ComprehensiveTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/ComprehensiveTests.swift; sourceTree = SOURCE_ROOT; };
-		1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = /Volumes/Data/xcode/AIStudio/AIStudio/NovaAPIServer.swift; sourceTree = "<absolute>"; };
+		1BB6A73CB9F58AB78E13C6BA /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NovaAPIServer.swift; sourceTree = "<group>"; };
 		4814E071A841DE299958E1C8 /* AIStudioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AIStudioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		60890DC5625CB141C5BF1EFE /* ModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/ModelTests.swift; sourceTree = SOURCE_ROOT; };
+		715ED8A71D15D7EAAB387C33 /* HighValueCoverageTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HighValueCoverageTests.swift; path = AIStudioTests/HighValueCoverageTests.swift; sourceTree = SOURCE_ROOT; };
 		79548E52AE5B823B694F144B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		9600634B6680A99EA542B857 /* FileOrganizerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/FileOrganizerTests.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000001 /* AIStudioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStudioApp.swift; sourceTree = "<group>"; };
@@ -196,6 +197,7 @@
 		AB423CE0443E644F798590F7 /* AIStudioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AIStudioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B24EF472452F3A96664DE309 /* ImageUtilsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/ImageUtilsTests.swift; sourceTree = SOURCE_ROOT; };
 		BD66B4B80B5AEAE0A44F3149 /* SecureLoggerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/SecureLoggerTests.swift; sourceTree = SOURCE_ROOT; };
+		CC000000COMP000100000001 /* ComprehensiveTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/ComprehensiveTests.swift; sourceTree = SOURCE_ROOT; };
 		E2E0ED38908F44A960A3645A /* SecurityUtilsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIStudioTests/SecurityUtilsTests.swift; sourceTree = SOURCE_ROOT; };
 		PY0000000000000000000001 /* aistudio_daemon.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = aistudio_daemon.py; sourceTree = "<group>"; };
 		PY0000000000000000000002 /* mlx_image_gen.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mlx_image_gen.py; sourceTree = "<group>"; };
@@ -444,6 +446,7 @@
 				04773E4E74AE1EB56F9A4EC4 /* RetryHandlerTests.swift */,
 				BD66B4B80B5AEAE0A44F3149 /* SecureLoggerTests.swift */,
 				E2E0ED38908F44A960A3645A /* SecurityUtilsTests.swift */,
+				715ED8A71D15D7EAAB387C33 /* HighValueCoverageTests.swift */,
 			);
 			name = AIStudioTests;
 			path = AIStudioTests;
@@ -622,6 +625,7 @@
 				1B127889B5B6FE588AEF8A27 /* RetryHandlerTests.swift in Sources */,
 				8E3E5A1287C1B3EE9D6147C9 /* SecureLoggerTests.swift in Sources */,
 				406936BE42B8F947B01A003C /* SecurityUtilsTests.swift in Sources */,
+				B5D5443EA992255537715997 /* HighValueCoverageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
